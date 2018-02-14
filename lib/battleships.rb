@@ -1,8 +1,9 @@
 class Battleships
 
-  attr_accessor :box_row_1, :box_row_2, :box_row_3, :box_row_4, :box_row_5, :box_row_6, :box_row_7, :box_row_8, :box_row_9, :selected_box_number, :box_1_variable, :box_2_variable, :box_3_variable, :box_4_variable, :box_5_variable, :box_6_variable, :box_7_variable, :box_8_variable, :box_9_variable
+  attr_accessor :box_row_1, :box_row_2, :box_row_3, :box_row_4, :box_row_5, :box_row_6, :box_row_7, :box_row_8, :box_row_9, :selected_box_number, :box_1_variable, :box_2_variable, :box_3_variable, :box_4_variable, :box_5_variable, :box_6_variable, :box_7_variable, :box_8_variable, :box_9_variable, :guesses_left
 
   def initialize
+    self.guesses_left = 5
     create_initial_board
   end
 
@@ -76,6 +77,13 @@ class Battleships
       self.box_9_variable = "⚓"
     end
     join_full_box
+  end
+
+  def run_guess
+    take_user_input
+    mark_as_hit_or_miss
+    display_board
+    self.guesses_left -= 1
   end
 
 end

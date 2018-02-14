@@ -41,5 +41,22 @@ describe Battleships do
       example_game.mark_as_hit_or_miss
       expect(example_game.box_row_8[17]).to eq("⚓")
     end
+    describe "play the game" do
+      it "should display board after taking input" do
+        $stdin = StringIO.new("2")
+        example_game.run_guess
+        expect{example_game.display_board}.to output(/⚓/).to_stdout
+      end
+    end
+    describe "guess mechanic" do
+      it "should start with 5 guesses left" do
+        expect(example_game.guesses_left).to eq(5)
+      end
+      it "should minus one guess after guess made" do
+        $stdin = StringIO.new("2")
+        example_game.run_guess
+        expect(example_game.guesses_left).to eq(4)
+      end
+    end
   end
 end
