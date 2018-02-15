@@ -1,89 +1,85 @@
 class Battleships
 
-  attr_accessor :box_row_1, :box_row_2, :box_row_3, :box_row_4, :box_row_5, :box_row_6, :box_row_7, :box_row_8, :box_row_9, :selected_box_number, :box_1_variable, :box_2_variable, :box_3_variable, :box_4_variable, :box_5_variable, :box_6_variable, :box_7_variable, :box_8_variable, :box_9_variable, :guesses_left
+  attr_accessor :selected_box_coordinates, :box_1_variable, :box_2_variable, :box_3_variable, :box_4_variable, :box_5_variable, :box_6_variable, :box_7_variable, :box_8_variable, :box_9_variable, :guesses_left, :game_is_won, :joined_box
 
-  def initialize
-    self.guesses_left = 5
+  def initialize(input = $stdin, output = $stdout)
+    @input = input
+    @output = output
+    @guesses_left = 6
+    @game_is_won = false
     create_initial_board
   end
 
   def construct_board
-    self.box_row_1 = ["╔","═","═","═","═","═","╗""╔","═","═","═","═","═","╗","╔","═","═","═","═","═","╗"]
-    self.box_row_2 = ["║"," "," ",box_1_variable," "," ","║","║"," "," ",box_2_variable," "," ","║","║"," "," ",box_3_variable," "," ","║"]
-    self.box_row_3 = ["╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝"]
-    self.box_row_4 = ["╔","═","═","═","═","═","╗""╔","═","═","═","═","═","╗","╔","═","═","═","═","═","╗"]
-    self.box_row_5 = ["║"," "," ",box_4_variable," "," ","║","║"," "," ",box_5_variable," "," ","║","║"," "," ",box_6_variable," "," ","║"]
-    self.box_row_6 = ["╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝"]
-    self.box_row_7 = ["╔","═","═","═","═","═","╗""╔","═","═","═","═","═","╗","╔","═","═","═","═","═","╗"]
-    self.box_row_8 = ["║"," "," ",box_7_variable," "," ","║","║"," "," ",box_8_variable," "," ","║","║"," "," ",box_9_variable," "," ","║"]
-    self.box_row_9 = ["╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝","╚","═","═","═","═","═","╝"]
-  end
-
-  def join_full_box
-    construct_board
-    box_row_1_joined = self.box_row_1.join
-    box_row_2_joined = self.box_row_2.join
-    box_row_3_joined = self.box_row_3.join
-    box_row_4_joined = self.box_row_4.join
-    box_row_5_joined = self.box_row_5.join
-    box_row_6_joined = self.box_row_6.join
-    box_row_7_joined = self.box_row_7.join
-    box_row_8_joined = self.box_row_8.join
-    box_row_9_joined = self.box_row_9.join
-    @joined_box = "#{box_row_1_joined}\n#{box_row_2_joined}\n#{box_row_3_joined}\n#{box_row_4_joined}\n#{box_row_5_joined}\n#{box_row_6_joined}\n#{box_row_7_joined}\n#{box_row_8_joined}\n#{box_row_9_joined}"
+    box_row_2 = ["║  ", @box_1_variable, "  ║║  ", @box_2_variable, "  ║║  ", @box_3_variable, "  ║"].join
+    box_row_5 = ["║  ", @box_4_variable, "  ║║  ", @box_5_variable, "  ║║  ", @box_6_variable, "  ║"].join
+    box_row_8 = ["║  ", @box_7_variable, "  ║║  ", @box_8_variable, "  ║║  ", @box_9_variable, "  ║"].join
+    @joined_box = "    A      B      C    \n ╔═════╗╔═════╗╔═════╗\n1#{box_row_2}\n ╚═════╝╚═════╝╚═════╝\n ╔═════╗╔═════╗╔═════╗\n2#{box_row_5}\n ╚═════╝╚═════╝╚═════╝\n ╔═════╗╔═════╗╔═════╗\n3#{box_row_8}\n ╚═════╝╚═════╝╚═════╝"
   end
 
   def create_initial_board
-    self.box_1_variable = "1"
-    self.box_2_variable = "2"
-    self.box_3_variable = "3"
-    self.box_4_variable = "4"
-    self.box_5_variable = "5"
-    self.box_6_variable = "6"
-    self.box_7_variable = "7"
-    self.box_8_variable = "8"
-    self.box_9_variable = "9"
-    join_full_box
+    @box_1_variable, @box_2_variable, @box_3_variable, @box_4_variable, @box_5_variable, @box_6_variable, @box_7_variable, @box_8_variable, @box_9_variable = ["☺"] * 9
+    construct_board
   end
 
   def display_board
-    puts @joined_box
+    @output.puts @joined_box
   end
 
   def take_user_input
-    puts "Please pick a number to 'attack'"
-    self.selected_box_number = gets.chomp.to_i
+    @output.puts "Please pick a number to 'attack'"
+    @selected_box_coordinates = @input.gets.chomp.to_s
   end
 
   def mark_as_hit_or_miss
-    case self.selected_box_number
-    when 1
-      self.box_1_variable = "☠"
-    when 2
-      self.box_2_variable = "⚓"
-    when 3
-      self.box_3_variable = "☠"
-    when 4
-      self.box_4_variable = "☠"
-    when 5
-      self.box_5_variable = "☠"
-    when 6
-      self.box_6_variable = "☠"
-    when 7
-      self.box_7_variable = "☠"
-    when 8
-      self.box_8_variable = "☠"
-    when 9
-      self.box_9_variable = "⚓"
+    case @selected_box_coordinates
+    when "A1"
+      @box_1_variable = "☠"
+    when "B1"
+      @box_2_variable = "⚓"
+    when "C1"
+      @box_3_variable = "☠"
+    when "A2"
+      @box_4_variable = "☠"
+    when "B2"
+      @box_5_variable = "☠"
+    when "C2"
+      @box_6_variable = "☠"
+    when "A3"
+      @box_7_variable = "☠"
+    when "B3"
+      @box_8_variable = "☠"
+    when "C3"
+      @box_9_variable = "⚓"
     end
-    join_full_box
+    construct_board
   end
 
   def run_guess
     take_user_input
     mark_as_hit_or_miss
     display_board
-    self.guesses_left -= 1
+    @guesses_left -= 1
+  end
+
+  def play_game
+    @output.puts "Welcome to Battleships! You have 5 guesses to hit 2 boats"
+    display_board
+    while @guesses_left > 0 && !@game_is_won
+      run_guess
+      check_if_all_boats_hit
+    end
+    if @game_is_won 
+      @output.puts "Yay! You won!"
+    elsif !@game_is_won
+      @output.puts "Oh dear. Looks like you lost!"
+    end
+  end
+
+  def check_if_all_boats_hit
+    if @box_2_variable == "⚓" && @box_9_variable == "⚓"
+      @game_is_won = true
+    end
   end
 
 end
