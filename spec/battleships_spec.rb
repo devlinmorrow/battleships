@@ -4,13 +4,16 @@ describe Battleships do
   describe "set up  board" do
     it "should start with a box" do
       example_game = Battleships.new
+
       expect(example_game.joined_box).to include("☺")
     end
     it "should display the grid" do
       input = StringIO.new
       @output = StringIO.new
       example_game = Battleships.new(input, @output)
+
       example_game.display_board
+
       expect(@output.string).to include("☺")
     end
   end
@@ -18,33 +21,42 @@ describe Battleships do
     it "should allow user to pick a number" do
       input = StringIO.new("A1")
       example_game = Battleships.new(input)
+
       example_game.take_user_input
+
       expect(example_game.selected_box_coordinates).to eql("A1")
     end
   end
   it "should mark box 1 as attacked but missed" do
     input = StringIO.new("A1")
     example_game = Battleships.new(input)
+
     example_game.take_user_input
     example_game.mark_as_hit_or_miss
+
     expect(example_game.box_1_variable).to eql("☠")
   end
   it "should mark box 2 as attacked and hit" do
     input = StringIO.new("B1")
     example_game = Battleships.new(input)
+
     example_game.take_user_input
     example_game.mark_as_hit_or_miss
+
     expect(example_game.box_2_variable).to eql("⚓")
   end
   describe "guess mechanic" do
     it "should start with 6 guesses left" do
       example_game = Battleships.new
+
       expect(example_game.guesses_left).to eq(6)
     end
     it "should minus one guess after guess made" do
       input = StringIO.new("C1")
       example_game = Battleships.new(input)
+
       example_game.run_guess
+
       expect(example_game.guesses_left).to eq(5)
     end
   end
@@ -54,24 +66,21 @@ describe Battleships do
       @output = StringIO.new
       example_game = Battleships.new(input, @output)
       example_game.guesses_left = 0
+
       example_game.play_game
+
       expect(@output.string).to include("lost")
     end
   end
   describe "you win" do
     it "should set game won condition if all boats hit" do
-      example_game = Battleships.new
-      example_game.box_2_variable = "⚓"
-      example_game.box_9_variable = "⚓"
-      example_game.check_if_all_boats_hit
-      expect(example_game.game_is_won).to be(true)
-    end
-    it "should tell you you won if game is won condition set" do
-      input = StringIO.new
+      input = StringIO.new("B1\nC3")
       @output = StringIO.new
       example_game = Battleships.new(input, @output)
-      example_game.game_is_won = true
+
       example_game.play_game
+
+      expect(example_game.game_is_won).to be(true)
       expect(@output.string).to include("won")
     end
   end
