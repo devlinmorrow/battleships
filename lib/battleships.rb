@@ -7,19 +7,32 @@ class Battleships
     @output = output
     @guesses_left = 6
     @game_is_won = false
-    create_initial_board
   end
 
-  def construct_board
-    box_row_2 = ["║  ", @box_1_variable, "  ║║  ", @box_2_variable, "  ║║  ", @box_3_variable, "  ║"].join
-    box_row_5 = ["║  ", @box_4_variable, "  ║║  ", @box_5_variable, "  ║║  ", @box_6_variable, "  ║"].join
-    box_row_8 = ["║  ", @box_7_variable, "  ║║  ", @box_8_variable, "  ║║  ", @box_9_variable, "  ║"].join
-    @joined_box = "    A      B      C    \n ╔═════╗╔═════╗╔═════╗\n1#{box_row_2}\n ╚═════╝╚═════╝╚═════╝\n ╔═════╗╔═════╗╔═════╗\n2#{box_row_5}\n ╚═════╝╚═════╝╚═════╝\n ╔═════╗╔═════╗╔═════╗\n3#{box_row_8}\n ╚═════╝╚═════╝╚═════╝"
+  def box_drawing
+    @top_box_line = "╔═════╗"
+    @mid_box_line = "║  ☺  ║"
+    @bot_box_line = "╚═════╝"
   end
 
-  def create_initial_board
-    @box_1_variable, @box_2_variable, @box_3_variable, @box_4_variable, @box_5_variable, @box_6_variable, @box_7_variable, @box_8_variable, @box_9_variable = ["☺"] * 9
-    construct_board
+  def construct_row
+    box_drawing
+    @grid_size = 3
+  @full_row = [@top_box_line * @grid_size]
+  @full_row << "\n"
+  @grid_size.times {@full_row << @mid_box_line}
+  @full_row << "\n"
+  @full_row << @bot_box_line * @grid_size
+  p @full_row
+  end
+
+  def construct_full_grid
+    @full_grid = []
+    @grid_size.times do 
+      @full_grid << @full_row 
+      @full_grid << "\n" 
+    end
+    print @full_grid.join
   end
 
   def display_board
