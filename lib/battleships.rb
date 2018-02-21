@@ -5,7 +5,7 @@ class Battleships
   def initialize(input = $stdin, output = $stdout)
     @input = input
     @output = output
-    @guesses_left = 6
+    @guesses_left = 20
     @game_is_won = false
     @letter_collection = ("A".."Z").to_a
     @top_box_line = "╔═════╗"
@@ -36,7 +36,7 @@ class Battleships
         a[0] << (i + 1).to_s
         a[0] << " "
       else
-      a[0] << (i + 1).to_s
+        a[0] << (i + 1).to_s
       end
     end
     @letters_string = "  "
@@ -60,13 +60,39 @@ class Battleships
 
   def mark_as_hit_or_miss
     case @selected_box_coordinates
-    when "A1","B2","C2","D2"
-      @grid[1][1] = "║  ⚓  ║"
-      @grid[1][2] = "║  ⚓  ║"
-      @grid[1][3] = "║  ⚓  ║"
-      @grid[1][4] = "║  ⚓  ║"
+    when "B6"
+      @grid[6][2] = "║  ⚓  ║"
+    when "B7"
+      @grid[7][2] = "║  ⚓  ║"
+    when "C10"
+      @grid[10][3] = "║  ⚓  ║"
+    when "J4"
+      @grid[4][10] = "║  ⚓  ║"
+    when "B2", "C2"
+      @grid[2][3] = "║  ⚓  ║"
+      @grid[2][4] = "║  ⚓  ║"
+    when "C3", "D3", "E3"
+      @grid[3][3] = "║  ⚓  ║"
+      @grid[3][4] = "║  ⚓  ║"
+      @grid[3][5] = "║  ⚓  ║"
+    when "A8", "B8", "C8"
+      @grid[8][1] = "║  ⚓  ║"
+      @grid[8][2] = "║  ⚓  ║"
+      @grid[8][3] = "║  ⚓  ║"
+    when "H8", "H9"
+      @grid[8][7] = "║  ⚓  ║"
+      @grid[9][7] = "║  ⚓  ║"
+    when "I7", "I8", "I9", "I10"
+      @grid[7][9] = "║  ⚓  ║"
+      @grid[8][9] = "║  ⚓  ║"
+      @grid[9][9] = "║  ⚓  ║"
+      @grid[10][9] = "║  ⚓  ║"
     else
-      @grid[1][7] = "☠"
+      coordinates_array = @selected_box_coordinates.chars
+      x = coordinates_array[0]
+      l = @letter_collection.index(x) + 1
+      n = coordinates_array[1].to_i
+      @grid[n][l] = "║  ☠  ║"
     end
   end
 
@@ -78,7 +104,7 @@ class Battleships
   end
 
   def play_game
-    @output.puts "Welcome to Battleships! You have 5 guesses to hit 2 boats"
+    @output.puts "Welcome to Battleships! You have 20 guesses to hit 9 boats"
     display_board
     while @guesses_left > 0 && !@game_is_won
       run_guess
@@ -92,12 +118,16 @@ class Battleships
   end
 
   def check_if_all_boats_hit
-    if @box_2_variable == "⚓" && @box_9_variable == "⚓"
+    sum = 0
+    @grid.each do |ele|
+      sum += ele.count("║  ⚓  ║")
+    end
+    sum -= 62
+    if sum == 18
       @game_is_won = true
     end
   end
-
 end
 
-b = Battleships.new
-b.display_board
+@b = Battleships.new
+@b.display_board

@@ -5,7 +5,7 @@ describe Battleships do
     it "should start with a box" do
       example_game = Battleships.new
 
-      expect(example_game.grid).to include("☺")
+      expect(example_game.grid[1]).to include("║  ☺  ║") 
     end
     it "should display the grid" do
       input = StringIO.new
@@ -14,7 +14,7 @@ describe Battleships do
 
       example_game.display_board
 
-      expect(@output.string).to include("☺")
+      expect(@output.string).to include("║  ☺  ║")
     end
   end
   describe "user selects box" do
@@ -27,37 +27,37 @@ describe Battleships do
       expect(example_game.selected_box_coordinates).to eql("A1")
     end
   end
-  it "should mark box 1 as attacked but missed" do
+  it "should mark A1 as attacked but missed" do
     input = StringIO.new("A1")
     example_game = Battleships.new(input)
 
     example_game.take_user_input
     example_game.mark_as_hit_or_miss
 
-    expect(example_game.box_1_variable).to eql("☠")
+    expect(example_game.grid[1][1]).to eql("║  ☠  ║")
   end
-  it "should mark box 2 as attacked and hit" do
-    input = StringIO.new("B1")
+  it "should mark B6 as attacked and hit" do
+    input = StringIO.new("B6")
     example_game = Battleships.new(input)
 
     example_game.take_user_input
     example_game.mark_as_hit_or_miss
 
-    expect(example_game.box_2_variable).to eql("⚓")
+    expect(example_game.grid[6][2]).to eql("║  ⚓  ║")
   end
   describe "guess mechanic" do
-    it "should start with 6 guesses left" do
+    it "should start with 20 guesses left" do
       example_game = Battleships.new
 
-      expect(example_game.guesses_left).to eq(6)
+      expect(example_game.guesses_left).to eq(20)
     end
     it "should minus one guess after guess made" do
-      input = StringIO.new("C1")
+      input = StringIO.new("A1")
       example_game = Battleships.new(input)
 
       example_game.run_guess
 
-      expect(example_game.guesses_left).to eq(5)
+      expect(example_game.guesses_left).to eq(19)
     end
   end
   describe "play the game, winning or losing" do
@@ -74,7 +74,7 @@ describe Battleships do
   end
   describe "you win" do
     it "should set game won condition if all boats hit" do
-      input = StringIO.new("B1\nC3")
+      input = StringIO.new("B6\nB7\nC10\nJ4\nB2\nC3\nA8\nH8\nI7")
       @output = StringIO.new
       example_game = Battleships.new(input, @output)
 
