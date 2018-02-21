@@ -5,7 +5,7 @@ describe Battleships do
     it "should start with a box" do
       example_game = Battleships.new
 
-      expect(example_game.joined_box).to include("☺")
+      expect(example_game.grid).to include("☺")
     end
     it "should display the grid" do
       input = StringIO.new

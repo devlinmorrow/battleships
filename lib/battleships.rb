@@ -1,71 +1,73 @@
 class Battleships
 
-  attr_accessor :selected_box_coordinates, :box_1_variable, :box_2_variable, :box_3_variable, :box_4_variable, :box_5_variable, :box_6_variable, :box_7_variable, :box_8_variable, :box_9_variable, :guesses_left, :game_is_won, :joined_box
+  attr_accessor :selected_box_coordinates, :guesses_left, :game_is_won, :grid
 
   def initialize(input = $stdin, output = $stdout)
     @input = input
     @output = output
     @guesses_left = 6
     @game_is_won = false
-  end
-
-  def box_drawing
+    @letter_collection = ("A".."Z").to_a
     @top_box_line = "╔═════╗"
-    @mid_box_line = "║  ☺  ║"
     @bot_box_line = "╚═════╝"
+    @grid_size = 10
+    construct_initial_grid
   end
 
-  def construct_row
-    box_drawing
-    @grid_size = 3
-  @full_row = [@top_box_line * @grid_size]
-  @full_row << "\n"
-  @grid_size.times {@full_row << @mid_box_line}
-  @full_row << "\n"
-  @full_row << @bot_box_line * @grid_size
-  p @full_row
+  def construct_initial_row
+    @neutral_mid_box_line = "║  ☺  ║" 
+    initial_box_row = ["  "]
+    initial_box_row[0] << @top_box_line * @grid_size
+    initial_box_row[0] << "\n"
+    @grid_size.times {initial_box_row << @neutral_mid_box_line}
+    initial_box_row << "\n  "
+    initial_box_row[@grid_size + 1] << @bot_box_line * @grid_size
+    initial_box_row[@grid_size + 1] << "\n"
+    initial_box_row
   end
 
-  def construct_full_grid
-    @full_grid = []
+  def construct_initial_grid
+    @grid = []
     @grid_size.times do 
-      @full_grid << @full_row 
-      @full_grid << "\n" 
+      @grid << construct_initial_row
     end
-    print @full_grid.join
+    @grid.each_with_index do |a, i|
+      if i < 9
+        a[0] << (i + 1).to_s
+        a[0] << " "
+      else
+      a[0] << (i + 1).to_s
+      end
+    end
+    @letters_string = "  "
+    x = 0
+    while x < @grid_size
+      @letters_string << "   #{@letter_collection[x]}   "
+      x += 1
+    end
+    @letters_string << "\n"
+    @grid = @grid.unshift(@letters_string)
   end
 
   def display_board
-    @output.puts @joined_box
+    @output.print @grid.join
   end
 
   def take_user_input
-    @output.puts "Please pick a number to 'attack'"
+    @output.puts "Please pick the coordinates you wish to attack"
     @selected_box_coordinates = @input.gets.chomp.to_s
   end
 
   def mark_as_hit_or_miss
     case @selected_box_coordinates
-    when "A1"
-      @box_1_variable = "☠"
-    when "B1"
-      @box_2_variable = "⚓"
-    when "C1"
-      @box_3_variable = "☠"
-    when "A2"
-      @box_4_variable = "☠"
-    when "B2"
-      @box_5_variable = "☠"
-    when "C2"
-      @box_6_variable = "☠"
-    when "A3"
-      @box_7_variable = "☠"
-    when "B3"
-      @box_8_variable = "☠"
-    when "C3"
-      @box_9_variable = "⚓"
+    when "A1","B2","C2","D2"
+      @grid[1][1] = "║  ⚓  ║"
+      @grid[1][2] = "║  ⚓  ║"
+      @grid[1][3] = "║  ⚓  ║"
+      @grid[1][4] = "║  ⚓  ║"
+    else
+      @grid[1][7] = "☠"
     end
-    construct_board
   end
 
   def run_guess
@@ -97,3 +99,5 @@ class Battleships
 
 end
 
+b = Battleships.new
+b.display_board
