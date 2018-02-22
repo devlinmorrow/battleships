@@ -1,7 +1,7 @@
 class Battleships
 
-  attr_accessor :guesses_left
-  attr_reader :selected_box_coordinates, :game_is_won, :grid
+  attr_accessor :guesses_left, :selected_box_coordinates
+  attr_reader :game_is_won, :grid
 
   def initialize(input = $stdin, output = $stdout)
     @input = input
@@ -78,48 +78,34 @@ class Battleships
     @selected_box_coordinates = @input.gets.chomp.to_s
   end
 
+  def set_random_boats
+    #Boat 2
+    p b1r1 = rand(1..9)
+    p b1c1 = rand(1..9)
+    @boat_2 = [[b1r1,b1c1],[b1r1+1,b1c1]]
+  end
+
   def mark_as_hit_or_miss
-    case @selected_box_coordinates
-    when "B6"
-      @grid[6][2] = "║  ⚓  ║"
-    when "B7"
-      @grid[7][2] = "║  ⚓  ║"
-    when "C10"
-      @grid[10][3] = "║  ⚓  ║"
-    when "J4"
-      @grid[4][10] = "║  ⚓  ║"
-    when "B2", "C2"
-      @grid[2][3] = "║  ⚓  ║"
-      @grid[2][4] = "║  ⚓  ║"
-    when "C3", "D3", "E3"
-      @grid[3][3] = "║  ⚓  ║"
-      @grid[3][4] = "║  ⚓  ║"
-      @grid[3][5] = "║  ⚓  ║"
-    when "A8", "B8", "C8"
-      @grid[8][1] = "║  ⚓  ║"
-      @grid[8][2] = "║  ⚓  ║"
-      @grid[8][3] = "║  ⚓  ║"
-    when "H8", "H9"
-      @grid[8][7] = "║  ⚓  ║"
-      @grid[9][7] = "║  ⚓  ║"
-    when "I7", "I8", "I9", "I10"
-      @grid[7][9] = "║  ⚓  ║"
-      @grid[8][9] = "║  ⚓  ║"
-      @grid[9][9] = "║  ⚓  ║"
-      @grid[10][9] = "║  ⚓  ║"
+    coordinates_array = @selected_box_coordinates.chars
+    #If user has selected 10, it will be split into separate chars, so amend this then relate the user input to the grid coordinates.
+    if coordinates_array[2] == "0"
+      coordinates_array.pop
+      coordinates_array[1] = "10"
+    end
+    column = @letter_collection.index(coordinates_array[0]) + 1
+    row = coordinates_array[1].to_i
+
+    #Mark as hit or miss.
+    if @boat_2.include?([row,column])
+      @grid[@boat_2[0][0]][@boat_2[0][1]] = "║  ⚓  ║"
+      @grid[@boat_2[1][0]][@boat_2[1][1]] = "║  ⚓  ║"
     else
-      coordinates_array = @selected_box_coordinates.chars
-      if coordinates_array[2] == "0"
-        coordinates_array.pop
-        coordinates_array[1] = "10"
-      end
-      letter = @letter_collection.index(coordinates_array[0]) + 1
-      number = coordinates_array[1].to_i
-      @grid[number][letter] = "║  ☠  ║"
+      @grid[row][column] = "║  ☠  ║"
     end
   end
 
   def check_if_all_boats_hit
+    #There should be 18 boat symbols hit to win the game. Count them, ignoring the first element of the grid, which is a string containing the letters in.
     sum = 0
     @grid[(1..@grid_size)].each do |array|
       sum += array.count("║  ⚓  ║")
@@ -130,5 +116,5 @@ class Battleships
   end
 end
 
-@b = Battleships.new
-@b.display_board
+  @b = Battleships.new
+  @b.display_board
