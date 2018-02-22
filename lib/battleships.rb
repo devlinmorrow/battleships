@@ -79,13 +79,17 @@ class Battleships
   end
 
   def set_random_boats
-    #Boat 2
-    p b1r1 = rand(1..9)
-    p b1c1 = rand(1..9)
-    @boat_2 = [[b1r1,b1c1],[b1r1+1,b1c1]]
+    #Boat 5
+    b5r1 = 5
+    b5c1 = 5
+    @boat_5 = [[b5r1,b5c1],[b5r1+1,b5c1]]
+    #Boat 6
+    b6r1 = 8
+    b6c1 = 8
+    @boat_6 = [[b6r1,b6c1],[b6r1+1,b6c1]]
   end
 
-  def mark_as_hit_or_miss
+  def convert_coordinates
     coordinates_array = @selected_box_coordinates.chars
     #If user has selected 10, it will be split into separate chars, so amend this then relate the user input to the grid coordinates.
     if coordinates_array[2] == "0"
@@ -94,13 +98,19 @@ class Battleships
     end
     column = @letter_collection.index(coordinates_array[0]) + 1
     row = coordinates_array[1].to_i
+    [row,column]
+  end
 
-    #Mark as hit or miss.
-    if @boat_2.include?([row,column])
-      @grid[@boat_2[0][0]][@boat_2[0][1]] = "║  ⚓  ║"
-      @grid[@boat_2[1][0]][@boat_2[1][1]] = "║  ⚓  ║"
+  def mark_as_hit_or_miss
+    coords = convert_coordinates
+    if @boat_5.include?(coords)
+      @grid[@boat_5[0][0]][@boat_5[0][1]] = "║  ⚓  ║"
+      @grid[@boat_5[1][0]][@boat_5[1][1]] = "║  ⚓  ║"
+    elsif @boat_6.include?(coords)
+      @grid[@boat_6[0][0]][@boat_6[0][1]] = "║  ⚓  ║"
+      @grid[@boat_6[1][0]][@boat_6[1][1]] = "║  ⚓  ║"
     else
-      @grid[row][column] = "║  ☠  ║"
+      @grid[coords[0]][coords[1]] = "║  ☠  ║"
     end
   end
 
@@ -116,5 +126,5 @@ class Battleships
   end
 end
 
-  @b = Battleships.new
-  @b.display_board
+@b = Battleships.new
+@b.display_board
