@@ -13,15 +13,6 @@ class Battleships
     construct_initial_grid
   end
 
-  def construct_initial_row
-    initial_box_row = ["  "]
-    initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
-    @grid_size.times {initial_box_row << "║  ☺  ║"}
-    initial_box_row << "\n  "
-    initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
-    initial_box_row
-  end
-
   def construct_initial_grid
     @grid = []
     @grid_size.times do 
@@ -48,8 +39,38 @@ class Battleships
     @grid = @grid.unshift(letters_string)
   end
 
+  def construct_initial_row
+    initial_box_row = ["  "]
+    initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
+    @grid_size.times {initial_box_row << "║  ☺  ║"}
+    initial_box_row << "\n  "
+    initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
+    initial_box_row
+  end
+
+  def play_game
+    @output.puts "Welcome to Battleships! You have 20 guesses to hit 9 boats"
+    display_board
+    while @guesses_left > 0 && !@game_is_won
+      run_guess
+      check_if_all_boats_hit
+    end
+    if @game_is_won 
+      @output.puts "Yay! You won!"
+    elsif !@game_is_won
+      @output.puts "Oh dear. Looks like you lost!"
+    end
+  end
+
   def display_board
     @output.print @grid.join
+  end
+
+  def run_guess
+    take_user_input
+    mark_as_hit_or_miss
+    display_board
+    @guesses_left -= 1
   end
 
   def take_user_input
@@ -98,33 +119,11 @@ class Battleships
     end
   end
 
-  def run_guess
-    take_user_input
-    mark_as_hit_or_miss
-    display_board
-    @guesses_left -= 1
-  end
-
-  def play_game
-    @output.puts "Welcome to Battleships! You have 20 guesses to hit 9 boats"
-    display_board
-    while @guesses_left > 0 && !@game_is_won
-      run_guess
-      check_if_all_boats_hit
-    end
-    if @game_is_won 
-      @output.puts "Yay! You won!"
-    elsif !@game_is_won
-      @output.puts "Oh dear. Looks like you lost!"
-    end
-  end
-
   def check_if_all_boats_hit
     sum = 0
-    @grid.each do |array|
+    @grid[(1..@grid_size)].each do |array|
       sum += array.count("║  ⚓  ║")
     end
-    sum -= 62
     if sum == 18
       @game_is_won = true
     end
