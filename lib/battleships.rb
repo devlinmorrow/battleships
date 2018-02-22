@@ -1,6 +1,7 @@
 class Battleships
 
-  attr_accessor :selected_box_coordinates, :guesses_left, :game_is_won, :grid
+  attr_accessor :guesses_left
+  attr_reader :selected_box_coordinates, :game_is_won, :grid
 
   def initialize(input = $stdin, output = $stdout)
     @input = input
@@ -8,21 +9,16 @@ class Battleships
     @guesses_left = 20
     @game_is_won = false
     @letter_collection = ("A".."Z").to_a
-    @top_box_line = "╔═════╗"
-    @bot_box_line = "╚═════╝"
     @grid_size = 10
     construct_initial_grid
   end
 
   def construct_initial_row
-    @neutral_mid_box_line = "║  ☺  ║" 
     initial_box_row = ["  "]
-    initial_box_row[0] << @top_box_line * @grid_size
-    initial_box_row[0] << "\n"
-    @grid_size.times {initial_box_row << @neutral_mid_box_line}
+    initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
+    @grid_size.times {initial_box_row << "║  ☺  ║"}
     initial_box_row << "\n  "
-    initial_box_row[@grid_size + 1] << @bot_box_line * @grid_size
-    initial_box_row[@grid_size + 1] << "\n"
+    initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
     initial_box_row
   end
 
@@ -31,22 +27,25 @@ class Battleships
     @grid_size.times do 
       @grid << construct_initial_row
     end
-    @grid.each_with_index do |a, i|
-      if i < 9
-        a[0] << (i + 1).to_s
-        a[0] << " "
+
+    #Append a number to each row, adding a space after single digits to allow room for double-digit numbers.
+    @grid.each_with_index do |array, index|
+      if index < 9
+        array[0] << (index + 1).to_s + " "
       else
-        a[0] << (i + 1).to_s
+        array[0] << (index + 1).to_s
       end
     end
-    @letters_string = "  "
-    x = 0
-    while x < @grid_size
-      @letters_string << "   #{@letter_collection[x]}   "
-      x += 1
+
+    #Finally, append the row of letters.
+    letters_string = "  "
+    value = 0
+    while value < @grid_size
+      letters_string << "   #{@letter_collection[value]}   "
+      value += 1
     end
-    @letters_string << "\n"
-    @grid = @grid.unshift(@letters_string)
+    letters_string << "\n"
+    @grid = @grid.unshift(letters_string)
   end
 
   def display_board
@@ -89,10 +88,13 @@ class Battleships
       @grid[10][9] = "║  ⚓  ║"
     else
       coordinates_array = @selected_box_coordinates.chars
-      x = coordinates_array[0]
-      l = @letter_collection.index(x) + 1
-      n = coordinates_array[1].to_i
-      @grid[n][l] = "║  ☠  ║"
+      if coordinates_array[2] == "0"
+        coordinates_array.pop
+        coordinates_array[1] = "10"
+      end
+      letter = @letter_collection.index(coordinates_array[0]) + 1
+      number = coordinates_array[1].to_i
+      @grid[number][letter] = "║  ☠  ║"
     end
   end
 
@@ -119,8 +121,8 @@ class Battleships
 
   def check_if_all_boats_hit
     sum = 0
-    @grid.each do |ele|
-      sum += ele.count("║  ⚓  ║")
+    @grid.each do |array|
+      sum += array.count("║  ⚓  ║")
     end
     sum -= 62
     if sum == 18
