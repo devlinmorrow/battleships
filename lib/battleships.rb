@@ -11,6 +11,7 @@ class Battleships
     @letter_collection = ("A".."Z").to_a
     @grid_size = 10
     construct_initial_grid
+    set_random_boats
   end
 
   def construct_initial_grid
@@ -18,7 +19,6 @@ class Battleships
     @grid_size.times do 
       @grid << construct_initial_row
     end
-
     #Append a number to each row, adding a space after single digits to allow room for double-digit numbers.
     @grid.each_with_index do |array, index|
       if index < 9
@@ -27,7 +27,6 @@ class Battleships
         array[0] << (index + 1).to_s
       end
     end
-
     #Finally, append the row of letters.
     letters_string = "  "
     value = 0
@@ -82,11 +81,19 @@ class Battleships
     #Boat 5
     b5r1 = 5
     b5c1 = 5
-    @boat_5 = [[b5r1,b5c1],[b5r1+1,b5c1]]
-    #Boat 6
+    @boat_5 = [[b5r1,b5c1],[b5r1,b5c1]]
+    x = rand(0..1)
+    @boat_5[1][x] = @boat_5[1][x] + 1
+    generate_boat_6
+    if (@boat_5[0],@boat_5[1]) === (@boat_6 
+  end
+
+  def generate_boat_6
     b6r1 = 8
     b6c1 = 8
-    @boat_6 = [[b6r1,b6c1],[b6r1+1,b6c1]]
+    @boat_6 = [[b6r1,b6c1],[b6r1,b6c1]]
+    x = rand(0..1)
+    @boat_6[1][x] = @boat_6[1][x] + 1
   end
 
   def convert_coordinates
@@ -96,21 +103,30 @@ class Battleships
       coordinates_array.pop
       coordinates_array[1] = "10"
     end
-    column = @letter_collection.index(coordinates_array[0]) + 1
+    column = @letter_collection.index(coordinates_array[0].upcase) + 1
     row = coordinates_array[1].to_i
     [row,column]
   end
 
-  def mark_as_hit_or_miss
+  def check_if_match
     coords = convert_coordinates
     if @boat_5.include?(coords)
-      @grid[@boat_5[0][0]][@boat_5[0][1]] = "║  ⚓  ║"
-      @grid[@boat_5[1][0]][@boat_5[1][1]] = "║  ⚓  ║"
+      "b5"
     elsif @boat_6.include?(coords)
-      @grid[@boat_6[0][0]][@boat_6[0][1]] = "║  ⚓  ║"
-      @grid[@boat_6[1][0]][@boat_6[1][1]] = "║  ⚓  ║"
+      "b6"
     else
       @grid[coords[0]][coords[1]] = "║  ☠  ║"
+    end
+  end
+
+  def mark_as_hit_or_miss
+    case check_if_match
+    when "b5"
+      @grid[@boat_5[0][0]][@boat_5[0][1]] = "║  ⚓  ║"
+      @grid[@boat_5[1][0]][@boat_5[1][1]] = "║  ⚓  ║"
+    when "b6"
+      @grid[@boat_6[0][0]][@boat_6[0][1]] = "║  ⚓  ║"
+      @grid[@boat_6[1][0]][@boat_6[1][1]] = "║  ⚓  ║"
     end
   end
 
