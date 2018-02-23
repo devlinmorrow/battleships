@@ -1,4 +1,8 @@
+require_relative 'battleships_grid_module.rb'
+
 class Battleships
+
+  include GridCreatability
 
   attr_accessor :guesses_left, :selected_box_coordinates
   attr_reader :game_is_won, :grid
@@ -9,42 +13,9 @@ class Battleships
     @guesses_left = 20
     @game_is_won = false
     @letter_collection = ("A".."Z").to_a
-    @grid_size = 10
+    @grid_size = 2
     construct_initial_grid
     set_random_boats
-  end
-
-  def construct_initial_grid
-    @grid = []
-    @grid_size.times do 
-      @grid << construct_initial_row
-    end
-    #Append a number to each row, adding a space after single digits to allow room for double-digit numbers.
-    @grid.each_with_index do |array, index|
-      if index < 9
-        array[0] << (index + 1).to_s + " "
-      else
-        array[0] << (index + 1).to_s
-      end
-    end
-    #Finally, append the row of letters.
-    letters_string = "  "
-    value = 0
-    while value < @grid_size
-      letters_string << "   #{@letter_collection[value]}   "
-      value += 1
-    end
-    letters_string << "\n"
-    @grid = @grid.unshift(letters_string)
-  end
-
-  def construct_initial_row
-    initial_box_row = ["  "]
-    initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
-    @grid_size.times {initial_box_row << "║  ☺  ║"}
-    initial_box_row << "\n  "
-    initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
-    initial_box_row
   end
 
   def play_game
@@ -61,10 +32,6 @@ class Battleships
     end
   end
 
-  def display_board
-    @output.print @grid.join
-  end
-
   def run_guess
     take_user_input
     mark_as_hit_or_miss
@@ -78,18 +45,35 @@ class Battleships
   end
 
   def set_random_boats
-    #Boat 5
-    b5r1 = rand(1..9)
-    b5c1 = rand(1..9)
-    @boat_5 = [[b5r1,b5c1],[b5r1,b5c1]]
-    x = rand(0..1)
-    @boat_5[1][x] = @boat_5[1][x] + 1
-    generate_boat_6
-    until (@boat_5 & @boat_6).empty?
-     generate_boat_6
-    end 
-    p @boat_6[0]
-    p @boat_6[1]
+    p @boat_1 = generate_boats_length_1
+    p @boat_2 = generate_boats_length_1
+    # p @boat_3 = generate_boats_length_1
+    # p @boat_4 = generate_boats_length_1
+    until ensure_no_boat_the_same(@boat_1,@boat_2)
+      @boat_2 = generate_boats_length_1
+    end
+
+    p @boat_1
+    p @boat_2
+    # p @boat_3
+    # p @boat_4
+
+    #    #boat 5
+    #    b5r1 = rand(1..9)
+    #    b5c1 = rand(1..9)
+    #    @boat_5 = [[b5r1,b5c1],[b5r1,b5c1]]
+    #    x = rand(0..1)
+    #    @boat_5[1][x] = @boat_5[1][x] + 1
+    #    generate_boat_6
+    #    until (@boat_5 & @boat_6).empty?
+    #     generate_boat_6
+    #    end 
+  end
+
+  def generate_boats_length_1
+    r1 = rand(1..@grid_size)
+    c1 = rand(1..@grid_size)
+    [[r1,c1]]
   end
 
   def generate_boat_6
@@ -98,6 +82,10 @@ class Battleships
     @boat_6 = [[b6r1,b6c1],[b6r1,b6c1]]
     x = rand(0..1)
     @boat_6[1][x] = @boat_6[1][x] + 1
+  end
+
+  def ensure_no_boat_the_same(boat1,boat2)
+    (boat1 & boat2).empty?
   end
 
   def convert_coordinates
@@ -114,10 +102,10 @@ class Battleships
 
   def check_if_match
     coords = convert_coordinates
-    if @boat_5.include?(coords)
-      "b5"
-    elsif @boat_6.include?(coords)
-      "b6"
+    if @boat_1.include?(coords)
+      "b1"
+    elsif @boat_2.include?(coords)
+      "b2"
     else
       @grid[coords[0]][coords[1]] = "║  ☠  ║"
     end
@@ -125,12 +113,16 @@ class Battleships
 
   def mark_as_hit_or_miss
     case check_if_match
-    when "b5"
-      @grid[@boat_5[0][0]][@boat_5[0][1]] = "║  ⚓  ║"
-      @grid[@boat_5[1][0]][@boat_5[1][1]] = "║  ⚓  ║"
-    when "b6"
-      @grid[@boat_6[0][0]][@boat_6[0][1]] = "║  ⚓  ║"
-      @grid[@boat_6[1][0]][@boat_6[1][1]] = "║  ⚓  ║"
+    when "b1"
+      @grid[@boat_1[0][0]][@boat_1[0][1]] = "║  ⚓  ║"
+    when "b2"
+      @grid[@boat_2[0][0]][@boat_2[0][1]] = "║  ⚓  ║"
+      # when "b5"
+      #   @grid[@boat_5[0][0]][@boat_5[0][1]] = "║  ⚓  ║"
+      #   @grid[@boat_5[1][0]][@boat_5[1][1]] = "║  ⚓  ║"
+      # when "b6"
+      #   @grid[@boat_6[0][0]][@boat_6[0][1]] = "║  ⚓  ║"
+      #   @grid[@boat_6[1][0]][@boat_6[1][1]] = "║  ⚓  ║"
     end
   end
 
@@ -140,9 +132,14 @@ class Battleships
     @grid[(1..@grid_size)].each do |array|
       sum += array.count("║  ⚓  ║")
     end
-    if sum == 18
+    if sum == count_total_number_of_boats_to_hit
       @game_is_won = true
     end
+  end
+
+  def count_total_number_of_boats_to_hit
+    #Add code to automatically work out how many boat targets to hit in total.
+    2
   end
 end
 
