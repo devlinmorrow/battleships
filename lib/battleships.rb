@@ -79,18 +79,22 @@ class Battleships
 
   def set_random_boats
     #Boat 5
-    b5r1 = 5
-    b5c1 = 5
+    b5r1 = rand(1..9)
+    b5c1 = rand(1..9)
     @boat_5 = [[b5r1,b5c1],[b5r1,b5c1]]
     x = rand(0..1)
     @boat_5[1][x] = @boat_5[1][x] + 1
     generate_boat_6
-    if (@boat_5[0],@boat_5[1]) === (@boat_6 
+    until (@boat_5 & @boat_6).empty?
+     generate_boat_6
+    end 
+    p @boat_6[0]
+    p @boat_6[1]
   end
 
   def generate_boat_6
-    b6r1 = 8
-    b6c1 = 8
+    b6r1 = rand(1..9)
+    b6c1 = rand(1..9)
     @boat_6 = [[b6r1,b6c1],[b6r1,b6c1]]
     x = rand(0..1)
     @boat_6[1][x] = @boat_6[1][x] + 1
