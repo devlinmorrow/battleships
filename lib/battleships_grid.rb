@@ -1,7 +1,6 @@
 class Grid
 
-  attr_accessor :grid
-  attr_reader :grid_size
+  attr_reader :grid
 
   def initialize(input = $stdin, output = $stdout)
     @input = input
@@ -12,19 +11,38 @@ class Grid
   end
 
   def construct_initial_grid
+    construct_box_rows
+    prepend_numbers
+    prepend_letters
+  end
+
+  def construct_box_rows
     @grid = []
     @grid_size.times do 
       @grid << construct_initial_row
     end
-    #Append a number to each row, adding a space after single digits to allow room for double-digit numbers.
-    @grid.each_with_index do |array, index|
-      if index < 9
-        array[0] << (index + 1).to_s + " "
-      else
-        array[0] << (index + 1).to_s
-      end
+  end
+end
+
+def construct_initial_row
+  initial_box_row = ["  "]
+  initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
+  @grid_size.times {initial_box_row << "║  ☺  ║"}
+  initial_box_row << "\n  "
+  initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
+  initial_box_row
+end
+
+def prepend_numbers
+  @grid.each_with_index do |array, index|
+    if index < 9
+      array[0] << (index + 1).to_s + " "
+    else
+      array[0] << (index + 1).to_s
     end
-    #Finally, append the row of letters.
+  end
+
+  def prepend_letters
     letters_string = "  "
     value = 0
     while value < @grid_size
@@ -33,15 +51,6 @@ class Grid
     end
     letters_string << "\n"
     @grid = @grid.unshift(letters_string)
-  end
-
-  def construct_initial_row
-    initial_box_row = ["  "]
-    initial_box_row[0] << ("╔═════╗" * @grid_size) + "\n"
-    @grid_size.times {initial_box_row << "║  ☺  ║"}
-    initial_box_row << "\n  "
-    initial_box_row[@grid_size + 1] << ("╚═════╝" * @grid_size) + "\n"
-    initial_box_row
   end
 
   def display_board

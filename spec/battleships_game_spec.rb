@@ -95,7 +95,7 @@ describe Battleships do
     end
   end
 
-  describe "#check_if_game_won" do
+  describe "#game_is_won" do
     context "when all boats hit" do
       it "makes game is won condition true" do
         example_game = Battleships.new
@@ -103,7 +103,7 @@ describe Battleships do
         example_game.boat_list.each_value do |value|
           value[0] = true
         end
-        example_game.check_if_game_is_won
+        example_game.game_is_won
 
         expect(example_game.game_is_won).to eql(true)
       end
@@ -113,7 +113,7 @@ describe Battleships do
       it "keeps the game is won condition false" do
         example_game = Battleships.new
 
-        example_game.check_if_game_is_won
+        example_game.game_is_won
 
         expect(example_game.game_is_won).to eql(false)
       end
@@ -141,7 +141,7 @@ describe Battleships do
       example_game.boat_list.each_value do |value|
         value[0] = true
       end
-      example_game.check_if_game_is_won
+      example_game.game_is_won
       example_game.play_game
 
       expect(@output.string).to include("won")
