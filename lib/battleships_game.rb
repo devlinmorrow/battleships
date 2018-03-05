@@ -15,17 +15,16 @@ class Battleships
     @output = output
     @guesses_left = 15
     @game_grid = Grid.new
-    @boat_list = {
-      boat_1: [false, [9,1]],
-      boat_2: [false, [8,3]],
-      boat_3: [false, [7,1]],
-      boat_4: [false, [2,7]],
-      boat_5: [false, [6,5],[6,6]],
-      boat_6: [false, [6,2],[6,3]],
-      boat_7: [false, [3,1],[4,1],[5,1]],
-      boat_8: [false, [2,9],[3,9],[4,9]],
-      boat_9: [false, [9,2],[9,3],[9,4],[9,5]]
-    }
+    @boat_1 = Boat.new([[9,1]])
+    @boat_2 = Boat.new([[8,3]])
+    @boat_3 = Boat.new([[7,1]])
+    @boat_4 = Boat.new([[2,7]])
+    @boat_5 = Boat.new([[6,5],[6,6]])
+    @boat_6 = Boat.new([[6,2],[6,3]])
+    @boat_7 = Boat.new([[3,1],[4,1],[5,1]])
+    @boat_8 = Boat.new([[2,9],[3,9],[4,9]])
+    @boat_9 = Boat.new([[9,2],[9,3],[9,4],[9,5]])
+    @boat_list = [@boat_1, @boat_2, @boat_3, @boat_4, @boat_5, @boat_6, @boat_7, @boat_8, @boat_9]
   end
 
   def play_game
@@ -64,16 +63,11 @@ class Battleships
 
   def mark_as_hit_or_miss
     target_coords = convert_coordinates
-    boat_key = nil
-    @boat_list.each_value do |value|
-      boat_key = @boat_list.key(value) if value.drop(1).include?(target_coords)
-    end
-    if boat_key 
+    if Boat.boat_coords_hit?(@boat_list, target_coords)
       @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ⚓  ║"
     else
       @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ☠  ║"
     end
-    boat_key
   end
 
   def mark_if_boat_sunk

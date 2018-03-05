@@ -24,7 +24,7 @@ describe Battleships do
 
   describe "#mark_as_hit_or_miss" do
     context "when attack is a hit" do
-      it "marks boat 1 as hit" do
+      it "displays target coordinates as a hit on the grid" do
         input = StringIO.new("A9")
         example_game = Battleships.new(input)
 
