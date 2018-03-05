@@ -47,6 +47,7 @@ class Battleships
     while @guesses_left > 0 && !game_is_won
       take_user_input
       mark_as_hit_or_miss
+      mark_if_boat_sunk
       @game_grid.display_board
       @guesses_left -= 1
     end
@@ -62,23 +63,37 @@ class Battleships
   end
 
   def mark_as_hit_or_miss
-    var = check_if_hit_or_miss
-    if var.is_a?(Symbol)
-      @boat_list[var][0] = true
-      @boat_list[var].drop(1).each do |boat_coords|
-        @game_grid.grid[boat_coords[0]][boat_coords[1]] = "║  ⚓  ║"
-      end
-    else
-      @game_grid.grid[var[0]][var[1]] = "║  ☠  ║"
+    target_coords = convert_coordinates
+    boat_key = nil
+    @boat_list.each_value do |value|
+      boat_key = @boat_list.key(value) if value.drop(1).include?(target_coords)
     end
+    if boat_key 
+      @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ⚓  ║"
+    else
+      @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ☠  ║"
+    end
+    boat_key
   end
 
-  def check_if_hit_or_miss
-    var = convert_coordinates
-    @boat_list.each_value do |value|
-      var = @boat_list.key(value) if value.drop(1).include?(var)
+  def mark_if_boat_sunk
+    #Trying to make a method which checks each element of any boat hit. If all coordinates of the boat have been hit, the true/false first element of the boat should be set to 'true' to mark that the boat is sunk.
+    boat_key = mark_as_hit_or_miss
+    x = false
+    if boat_key
+      i = 0
+      boat_array = @boat_list[boat_key].drop(1)
+      while x = true && i < array.length
+        if @game_grid.grid[array[i][0]][array[i][1]] == "║  ⚓  ║"
+          x = true
+        else
+          x = false
+        end
+      end
     end
-    var 
+    if x
+      @boat_list[boat_key][0] = true
+    end
   end
 
   def convert_coordinates
@@ -93,11 +108,11 @@ class Battleships
   end
 
   def win_message
-      @output.puts "Yay! You won!"
+    @output.puts "Yay! You won!"
   end
 
   def lose_message
-      @output.puts "Oh dear. Looks like you lost!"
+    @output.puts "Oh dear. Looks like you lost!"
   end
 end
 

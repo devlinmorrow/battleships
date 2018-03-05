@@ -22,42 +22,6 @@ describe Battleships do
     end
   end
 
-  describe "#check_if_hit_or_miss" do
-    context "when an attack hits a boat's coordinates" do
-      it "returns boat 1 key" do
-        input = StringIO.new("A9")
-        example_game = Battleships.new(input)
-
-        example_game.take_user_input
-        example_game.convert_coordinates
-
-        expect(example_game.check_if_hit_or_miss).to eql(:boat_1)
-      end
-
-      it "returns boat 5 key" do
-        input = StringIO.new("F6")
-        example_game = Battleships.new(input)
-
-        example_game.take_user_input
-        example_game.convert_coordinates
-
-        expect(example_game.check_if_hit_or_miss).to eql(:boat_5)
-      end
-    end
-
-    context "when an attack misses" do
-      it "returns coordinates" do
-        input = StringIO.new("A1")
-        example_game = Battleships.new(input)
-
-        example_game.take_user_input
-        example_game.convert_coordinates
-
-        expect(example_game.check_if_hit_or_miss).to eql([1,1])
-      end
-    end
-  end
-
   describe "#mark_as_hit_or_miss" do
     context "when attack is a hit" do
       it "marks boat 1 as hit" do
@@ -70,15 +34,14 @@ describe Battleships do
         expect(example_game.game_grid.grid[9][1]).to eql("║  ⚓  ║")
       end
 
-      it "marks boat 5 as hit" do
-        input = StringIO.new("F6")
+      it "marks boat 5 part 1 as hit" do
+        input = StringIO.new("E6")
         example_game = Battleships.new(input)
 
         example_game.take_user_input
         example_game.mark_as_hit_or_miss
 
         expect(example_game.game_grid.grid[6][5]).to eql("║  ⚓  ║")
-        expect(example_game.game_grid.grid[6][6]).to eql("║  ⚓  ║")
       end
     end
 
@@ -91,6 +54,21 @@ describe Battleships do
         example_game.mark_as_hit_or_miss
 
         expect(example_game.game_grid.grid[1][1]).to eql("║  ☠  ║")
+      end
+    end
+  end
+
+  describe "mark_if_boat_sunk" do
+    context "when boat 1 is sunk" do
+      it "returns true" do
+        input = StringIO.new("A9")
+        example_game = Battleships.new(input)
+
+        example_game.take_user_input
+        example_game.mark_as_hit_or_miss
+        example_game.mark_if_boat_sunk
+
+        expect(example_game.boat_list[:boat_1][0]).to eql(true)
       end
     end
   end
