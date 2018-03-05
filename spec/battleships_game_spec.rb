@@ -58,40 +58,24 @@ describe Battleships do
     end
   end
 
-  describe "mark_if_boat_sunk" do
-    context "when boat 1 is sunk" do
-      it "returns true" do
-        input = StringIO.new("A9")
-        example_game = Battleships.new(input)
-
-        example_game.take_user_input
-        example_game.mark_as_hit_or_miss
-        example_game.mark_if_boat_sunk
-
-        expect(example_game.boat_list[:boat_1][0]).to eql(true)
-      end
-    end
-  end
-
   describe "#game_is_won" do
-    context "when all boats hit" do
-      it "makes game is won condition true" do
+    context "when all boats sunk" do
+      it "returns true" do
         example_game = Battleships.new
 
-        example_game.boat_list.each_value do |value|
-          value[0] = true
+        example_game.boat_list.each do |boat|
+          boat.boat_coords_hash.each_key do |key|
+            boat.boat_coords_hash[key] = true
+          end
         end
-        example_game.game_is_won
 
         expect(example_game.game_is_won).to eql(true)
       end
     end
 
-    context "when not all boats hit" do
-      it "keeps the game is won condition false" do
+    context "when not all boats sunk" do
+      it "returns false" do
         example_game = Battleships.new
-
-        example_game.game_is_won
 
         expect(example_game.game_is_won).to eql(false)
       end
@@ -116,11 +100,12 @@ describe Battleships do
       @output = StringIO.new
       example_game = Battleships.new(input, @output)
 
-      example_game.boat_list.each_value do |value|
-        value[0] = true
-      end
-      example_game.game_is_won
-      example_game.play_game
+        example_game.boat_list.each do |boat|
+          boat.boat_coords_hash.each_key do |key|
+            boat.boat_coords_hash[key] = true
+          end
+        end
+        example_game.play_game
 
       expect(@output.string).to include("won")
     end
@@ -138,5 +123,4 @@ describe Battleships do
       expect(@output.string).to include("lost")
     end
   end
-
 end

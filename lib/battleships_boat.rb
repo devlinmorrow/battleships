@@ -20,9 +20,18 @@ class Boat
         end
       end
     end
-     hit 
+    hit 
   end
 
   def boat_sunk?
+    if boat_coords_hash.values.all?(true)
+      true
+    else
+      false
+    end
+  end
+
+  def self.all_boats_sunk?(boat_list)
+    boat_list.all? {|boat| boat.boat_sunk? == true}
   end
 end

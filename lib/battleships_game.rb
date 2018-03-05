@@ -5,7 +5,7 @@ require_relative 'battleships_boat.rb'
 
 class Battleships
 
-  attr_accessor :guesses_left, :boat_list
+  attr_accessor :guesses_left, :boat_list, :boat_1
   attr_reader :game_grid, :selected_box_coordinates
 
   LETTERCOLLECTION = ("A".."Z").to_a
@@ -46,14 +46,13 @@ class Battleships
     while @guesses_left > 0 && !game_is_won
       take_user_input
       mark_as_hit_or_miss
-      mark_if_boat_sunk
       @game_grid.display_board
       @guesses_left -= 1
     end
   end
 
   def game_is_won
-    !@boat_list.values.flatten.any?(false)
+    Boat.all_boats_sunk?(@boat_list)
   end
 
   def take_user_input
@@ -67,26 +66,6 @@ class Battleships
       @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ⚓  ║"
     else
       @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ☠  ║"
-    end
-  end
-
-  def mark_if_boat_sunk
-    #Trying to make a method which checks each element of any boat hit. If all coordinates of the boat have been hit, the true/false first element of the boat should be set to 'true' to mark that the boat is sunk.
-    boat_key = mark_as_hit_or_miss
-    x = false
-    if boat_key
-      i = 0
-      boat_array = @boat_list[boat_key].drop(1)
-      while x = true && i < array.length
-        if @game_grid.grid[array[i][0]][array[i][1]] == "║  ⚓  ║"
-          x = true
-        else
-          x = false
-        end
-      end
-    end
-    if x
-      @boat_list[boat_key][0] = true
     end
   end
 
