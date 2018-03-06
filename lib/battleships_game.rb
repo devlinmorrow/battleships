@@ -42,7 +42,7 @@ class Battleships
   end
 
   def initial_message
-    @output.puts "Welcome to Battleships! You have #{@guesses_left} guesses to hit #{@boat_list.length} boats. If you hit a boat, you won't lose a guess and I will also tell you when you have sunk a boat... Good luck!"
+    @output.puts "Welcome to Battleships! You have #{@guesses_left} guesses to sink #{@boat_list.length} boats.\nI will tell you when you have sunk a boat and you won't lose a guess if you hit a boat. Good luck!"
     @game_grid.display_board
   end
 
@@ -76,7 +76,7 @@ class Battleships
   end
 
 def take_user_input
-  @output.puts "Please pick the coordinates you wish to attack"
+  @output.puts "\nPlease pick the coordinates you wish to attack."
   @selected_box_coordinates = @input.gets.chomp.to_s
 end
 
