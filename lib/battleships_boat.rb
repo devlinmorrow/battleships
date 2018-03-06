@@ -31,6 +31,11 @@ class Boat
     end
   end
 
+  def self.count_boats_not_sunk(boat_list)
+    boat_list.length - boat_list.count {|boat| boat.boat_sunk? == true}
+  end
+
+
   def self.all_boats_sunk?(boat_list)
     boat_list.all? {|boat| boat.boat_sunk? == true}
   end
