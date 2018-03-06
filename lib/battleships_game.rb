@@ -52,7 +52,7 @@ class Battleships
       take_user_input
       mark_as_hit_or_miss
       @game_grid.display_board
-      @guesses_left -= 1
+      decrease_guesses_left_if_not_hit
     end
   end
 
@@ -75,38 +75,47 @@ class Battleships
     end
   end
 
-def take_user_input
-  @output.puts "\nPlease pick the coordinates you wish to attack."
-  @selected_box_coordinates = @input.gets.chomp.to_s
-end
-
-def mark_as_hit_or_miss
-  target_coords = convert_coordinates
-  if Boat.boat_coords_hit?(@boat_list, target_coords)
-    @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ⚓  ║"
-  else
-    @game_grid.grid[target_coords[0]][target_coords[1]] = "║  ☠  ║"
+  def take_user_input
+    @output.puts "\nPlease pick the coordinates you wish to attack."
+    @selected_box_coordinates = @input.gets.chomp.to_s
   end
-end
 
-def convert_coordinates
-  coordinates_array = @selected_box_coordinates.chars
-  if coordinates_array[2] == "0"
-    coordinates_array.pop
-    coordinates_array[1] = "10"
+  def mark_as_hit_or_miss
+    if hit?
+      @game_grid.grid[convert_coordinates[0]][convert_coordinates[1]] = "║  ⚓  ║"
+    else
+      @game_grid.grid[convert_coordinates[0]][convert_coordinates[1]] = "║  ☠  ║"
+    end
   end
-  column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
-  row = coordinates_array[1].to_i
-  [row, column]
-end
 
-def win_message
-  @output.puts "Yay! You won!"
-end
+  def hit?
+    Boat.boat_coords_hit?(@boat_list, convert_coordinates)
+  end
 
-def lose_message
-  @output.puts "Oh dear. Looks like you lost!"
-end
+  def convert_coordinates
+    coordinates_array = @selected_box_coordinates.chars
+    if coordinates_array[2] == "0"
+      coordinates_array.pop
+      coordinates_array[1] = "10"
+    end
+    column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
+    row = coordinates_array[1].to_i
+    [row, column]
+  end
+
+  def decrease_guesses_left_if_not_hit
+    if !hit?
+      @guesses_left -= 1
+    end
+  end
+
+  def win_message
+    @output.puts "Yay! You won!"
+  end
+
+  def lose_message
+    @output.puts "Oh dear. Looks like you lost!"
+  end
 end
 
 @b = Battleships.new
