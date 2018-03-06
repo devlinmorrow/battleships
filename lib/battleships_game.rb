@@ -33,7 +33,7 @@ class Battleships
 
   def play_game
     initial_message
-    run_guess
+    make_guesses
     if game_is_won 
       win_message
     else
@@ -46,11 +46,13 @@ class Battleships
     @game_grid.display_board
   end
 
-  def run_guess
+  def make_guesses
     while @guesses_left > 0 && !game_is_won
-      guesses_left_message
+      guesses_and_boats_left_message
       take_user_input
       mark_as_hit_or_miss
+      state_if_hit_or_miss
+      state_if_any_boat_sunk
       @game_grid.display_board
       decrease_guesses_left_if_not_hit
     end
@@ -60,7 +62,7 @@ class Battleships
     Boat.all_boats_sunk?(@boat_list)
   end
 
-  def guesses_left_message
+  def guesses_and_boats_left_message
     @output.print "You have "
     if @guesses_left == 1 
       @output.print "1 guess"
@@ -101,6 +103,24 @@ class Battleships
     column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
     row = coordinates_array[1].to_i
     [row, column]
+  end
+
+  def state_if_hit_or_miss
+    if hit?
+    @output.puts "You got one!"
+    else
+      @output.puts "Ah... Looks like you missed."
+    end
+  end
+
+  def state_if_any_boat_sunk
+    if Boat.any_boat_sunk?(@boat_list)
+      boat_sunk_message 
+    end
+  end
+
+  def boat_sunk_message
+    @output.puts "Yay! You sank a boat!"
   end
 
   def decrease_guesses_left_if_not_hit

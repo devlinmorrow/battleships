@@ -9,6 +9,29 @@ describe Battleships do
     end
   end
 
+  describe "#guesses_and_boats_left_message" do
+    it "outputs how many guesses are left" do
+      input = StringIO.new
+      @output = StringIO.new
+      example_game = Battleships.new(input, @output)
+      example_game.guesses_left = 1
+
+      example_game.guesses_and_boats_left_message
+
+      expect(@output.string).to include("1 guess")
+    end
+
+    it "outputs how many boats are left to sink" do
+      input = StringIO.new
+      @output = StringIO.new
+      example_game = Battleships.new(input, @output)
+
+      example_game.guesses_and_boats_left_message
+
+      expect(@output.string).to include("9 boats")
+    end
+  end
+
   describe "#take_user_input" do
     it "stores user input" do
       input = StringIO.new("A1")
@@ -17,16 +40,6 @@ describe Battleships do
       example_game.take_user_input
 
       expect(example_game.selected_box_coordinates).to eql("A1")
-    end
-  end
-
-  describe "#convert_coordinates" do
-    it "converts input to grid coordinates" do
-      input = StringIO.new("A1")
-      example_game = Battleships.new(input)
-
-      example_game.take_user_input
-      expect(example_game.convert_coordinates).to eql([1,1])
     end
   end
 
@@ -56,60 +69,98 @@ describe Battleships do
     end
   end
 
-  describe "#run_guess" do
-    context "when there are guesses remaining" do 
-      it "takes input and marks hit or miss" do
-        input = StringIO.new("A1")
-        example_game = Battleships.new(input)
-        example_game.guesses_left = 1
+  describe "#convert_coordinates" do
+    it "converts input to grid coordinates" do
+      input = StringIO.new("A1")
+      example_game = Battleships.new(input)
 
-        example_game.run_guess
+      example_game.take_user_input
+      expect(example_game.convert_coordinates).to eql([1,1])
+    end
+  end
 
-        expect(example_game.game_grid.grid[1][1]).to eql("║  ☠  ║")
-      end
-
-      it "minuses one guess after guess made" do
-        input = StringIO.new("A1")
-        example_game = Battleships.new(input)
-        example_game.guesses_left = 1
-
-        example_game.run_guess
-
-        expect(example_game.guesses_left).to eq(0)
-      end
-
-      it "outputs how many guesses are left" do
-        input = StringIO.new("A1\nA2")
+  describe "#state_if_hit_or_miss" do
+    context "when attack was a hit" do
+      it "outputs hit message" do
+        input = StringIO.new("A9")
         @output = StringIO.new
         example_game = Battleships.new(input, @output)
-        example_game.guesses_left = 2
 
-        example_game.run_guess
+        example_game.take_user_input
+        example_game.state_if_hit_or_miss
 
-        expect(@output.string).to include("1 guess")
+        expect(@output.string).to include("got one")
       end
     end
 
-    it "outputs how many boats are left to sink" do
+    context "when attack was a miss" do
+      it "outputs miss message" do
         input = StringIO.new("A1")
         @output = StringIO.new
         example_game = Battleships.new(input, @output)
+
+        example_game.take_user_input
+        example_game.state_if_hit_or_miss
+
+        expect(@output.string).to include("miss")
+      end
+    end
+  end
+
+  describe "#state_if_any_boat_sunk" do
+    it "outputs that boat has been sunk" do
+      input = StringIO.new("A9")
+      @output = StringIO.new
+      example_game = Battleships.new(input, @output)
+      example_game.guesses_left = 1
+
+      example_game.take_user_input
+      example_game.hit?
+      example_game.state_if_any_boat_sunk
+
+      expect(@output.string).to include("sank")
+    end
+  end
+
+  describe "#decrease_guesses_left_if_not_hit" do
+    context "when attack was a hit" do
+      it "does not minus one guess from guesses left" do
+        input = StringIO.new("A9")
+        example_game = Battleships.new(input)
         example_game.guesses_left = 1
 
-        example_game.run_guess
+        example_game.take_user_input
+        example_game.hit?
+        example_game.decrease_guesses_left_if_not_hit
 
-        expect(@output.string).to include("9 boats")
+        expect(example_game.guesses_left).to eq(1)
       end
+    end
 
-    context "when there are no guesses remaining" do
-      it "does not take input" do
-        example_game = Battleships.new
-        example_game.guesses_left = 0
+    context "when attack was a miss" do
+      it "minuses one guess from guesses left" do
+        input = StringIO.new("A1")
+        example_game = Battleships.new(input)
+        example_game.guesses_left = 1
 
-        example_game.run_guess
+        example_game.take_user_input
+        example_game.hit?
+        example_game.decrease_guesses_left_if_not_hit
 
-        expect(example_game.selected_box_coordinates).to eql(nil)
+        expect(example_game.guesses_left).to eq(0)
       end
+    end
+  end
+
+  describe "#make_guesses" do
+    it "runs until there are no guesses left" do
+      input = StringIO.new("A1\nA2")
+      example_game = Battleships.new(input)
+      example_game.guesses_left = 2
+
+      example_game.make_guesses
+
+      expect(example_game.guesses_left).to eql(0)
     end
   end
 

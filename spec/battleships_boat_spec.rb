@@ -58,6 +58,18 @@ describe Boat do
     end
   end
 
+  describe ".any_boat_sunk?" do
+    context "a boat sunk" do
+      it "returns true" do
+        example_boat = Boat.new([[9,1]])
+
+        example_boat.boat_coords_hash[[9,1]] = true
+
+        expect(Boat.any_boat_sunk?([example_boat])).to eql(true)
+      end
+    end
+  end
+
   describe ".all_boats_sunk?" do
     context "all boats sunk" do
       it "returns true" do
