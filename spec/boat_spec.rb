@@ -1,4 +1,4 @@
-require 'battleships_boat'
+require 'boat'
 
 describe Boat do
   describe "#initialize" do

@@ -1,4 +1,4 @@
-require "battleships_grid"
+require "grid"
 
 describe "Grid" do
   describe "#construct_initial_grid" do

@@ -1,4 +1,4 @@
-require 'battleships_game'
+require 'game'
 
 describe Battleships do
   describe "#create_boat_list" do

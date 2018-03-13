@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require_relative 'battleships_grid.rb'
-require_relative 'battleships_boat.rb'
+require_relative 'grid.rb'
+require_relative 'boat.rb'
 
 class Battleships
 
