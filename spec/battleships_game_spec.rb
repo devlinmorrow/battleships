@@ -41,6 +41,18 @@ describe Battleships do
 
       expect(example_game.selected_box_coordinates).to eql("A1")
     end
+
+    it "does not store input not in correct format" do
+      input = StringIO.new("asdf")
+      example_game = Battleships.new(input)
+
+      example_game.take_user_input
+
+      expect(example_game.selected_box_coordinates).to eql(nil)
+    end
+
+    it "stores second input if first not in correct format" do
+    end
   end
 
   describe "#mark_as_hit_or_miss" do

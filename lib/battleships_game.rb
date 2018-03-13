@@ -80,6 +80,10 @@ class Battleships
   def take_user_input
     @output.puts "\nPlease pick the coordinates you wish to attack."
     @selected_box_coordinates = @input.gets.chomp.to_s
+    until convert_coordinates[0].between?(1,10) && convert_coordinates[1].between?(1,10)
+      @output.puts "That's not a valid target! Please pick something sensible..."
+    @selected_box_coordinates = @input.gets.chomp.to_s
+    end
   end
 
   def mark_as_hit_or_miss
