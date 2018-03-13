@@ -91,6 +91,12 @@ class Battleships
 
   def convert_coordinates(input)
     coordinates_array = input.chars
+    @selected_box_coordinates = @input.gets.chomp.to_s
+  end
+
+  def convert_coordinates
+    #add input parameter to this instead of reading the instance variable selected box coords wherever it is.
+    coordinates_array = @selected_box_coordinates.chars
     if coordinates_array[2] == "0"
       coordinates_array.pop
       coordinates_array[1] = "10"
