@@ -41,17 +41,18 @@ describe Battleships do
 
       expect(example_game.selected_box_coordinates).to eql("A1")
     end
+  end
 
-    it "does not store input not in correct format" do
-      input = StringIO.new("asdf")
-      example_game = Battleships.new(input)
+  describe "#check_if_input_correct_format" do
+    context "input is in correct format" do
+      it "returns true" do
+        example_game = Battleships.new
 
-      example_game.take_user_input
-
-      expect(example_game.selected_box_coordinates).to eql(nil)
+        expect(example_game.check_if_input_correct_format("A1")).to eql(true)
+      end
     end
 
-    it "stores second input if first not in correct format" do
+    context "input does not contain a letter" do
     end
   end
 

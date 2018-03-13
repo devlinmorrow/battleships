@@ -80,10 +80,39 @@ class Battleships
   def take_user_input
     @output.puts "\nPlease pick the coordinates you wish to attack."
     @selected_box_coordinates = @input.gets.chomp.to_s
-    until convert_coordinates[0].between?(1,10) && convert_coordinates[1].between?(1,10)
-      @output.puts "That's not a valid target! Please pick something sensible..."
-    @selected_box_coordinates = @input.gets.chomp.to_s
+  end
+
+  def check_if_input_correct_format(data)
+    true
+  end
+
+  def hello
+    data = data.chars
+    unless lettercollection[0..9] === data[0].upcase
+      return false
     end
+    if data[3]
+      return false
+    elsif data[1].to_i < 1
+      return false
+elsif data[1].to_i > 9 
+      return false
+    elsif data[2]
+      return false unless data[1].to_i == 1 && data[2].to_i == 0
+    end
+    true
+  end
+
+  def convert_coordinates
+    #add input parameter to this instead of reading the instance variable selected box coords wherever it is.
+    coordinates_array = @selected_box_coordinates.chars
+    if coordinates_array[2] == "0"
+      coordinates_array.pop
+      coordinates_array[1] = "10"
+    end
+    column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
+    row = coordinates_array[1].to_i
+    [row, column]
   end
 
   def mark_as_hit_or_miss
@@ -96,17 +125,6 @@ class Battleships
 
   def hit?
     Boat.boat_coords_hit?(@boat_list, convert_coordinates)
-  end
-
-  def convert_coordinates
-    coordinates_array = @selected_box_coordinates.chars
-    if coordinates_array[2] == "0"
-      coordinates_array.pop
-      coordinates_array[1] = "10"
-    end
-    column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
-    row = coordinates_array[1].to_i
-    [row, column]
   end
 
   def state_if_hit_or_miss
