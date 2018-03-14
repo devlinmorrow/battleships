@@ -40,4 +40,24 @@ describe "Grid" do
       expect(@output.string).to include("║  ☺  ║")
     end
   end
+
+  describe "#record_hit" do
+    it "inputs the hit symbol in the corresponding grid coordinates" do
+      example_grid = Grid.new
+
+      example_grid.record_hit([1,1])
+
+      expect(example_grid.grid[1][1]).to eql("║  ⚓  ║")
+    end
+  end
+
+  describe "#record_miss" do
+    it "inputs the hit symbol in the corresponding grid coordinates" do
+      example_grid = Grid.new
+
+      example_grid.record_miss([1,1])
+
+      expect(example_grid.grid[1][1]).to eql("║  ☠  ║")
+    end
+  end
 end

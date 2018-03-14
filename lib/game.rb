@@ -2,18 +2,19 @@
 
 require_relative 'grid.rb'
 require_relative 'boat.rb'
+require_relative 'boat_tracker.rb'
 
 class Battleships
 
-  attr_accessor :guesses_left, :boat_list
-  attr_reader :game_grid, :selected_box_coordinates, :boat_1
+  attr_accessor :guesses_left
+  attr_reader :selected_box_coordinates, :converted_coordinates, :boat_list
 
   LETTERCOLLECTION = ("A".."Z").to_a
 
   def initialize(input = $stdin, output = $stdout)
     @input = input
     @output = output
-    @guesses_left = 150
+    @guesses_left = 20
     @game_grid = Grid.new
     @boat_list = create_boat_list
   end
@@ -32,9 +33,10 @@ class Battleships
   end
 
   def play_game
+    system "clear"
     initial_message
     make_guesses
-    if game_is_won 
+    if game_is_won(@boat_list)
       win_message
     else
       lose_message
@@ -43,23 +45,27 @@ class Battleships
 
   def initial_message
     @output.puts "Welcome to Battleships! You have #{@guesses_left} guesses to sink #{@boat_list.length} boats.\nI will tell you when you have sunk a boat and you won't lose a guess if you hit a boat. Good luck!"
-    @game_grid.display_board
+    sleep(5)
+    system "clear"
   end
 
   def make_guesses
-    while @guesses_left > 0 && !game_is_won
+    while @guesses_left > 0 && !game_is_won(@boat_list)
+      @game_grid.display_board
+      sleep(1)
       guesses_and_boats_left_message
       take_user_input
-      mark_as_hit_or_miss
-      state_if_hit_or_miss
-      state_if_any_boat_sunk
-      @game_grid.display_board
-      decrease_guesses_left_if_not_hit
+      convert_coordinates(@selected_box_coordinates)
+      if BoatTracker.any_boat_hit?(@boat_list, @converted_coordinates)
+        run_hit_mechanics
+      else
+        run_miss_mechanics
+      end
     end
   end
 
-  def game_is_won
-    Boat.all_boats_sunk?(@boat_list)
+  def game_is_won(boat_list)
+    BoatTracker.all_boats_sunk?(boat_list)
   end
 
   def guesses_and_boats_left_message
@@ -70,63 +76,57 @@ class Battleships
       @output.print "#{guesses_left} guesses"
       @output.print " left to sink"
     end
-    if Boat.count_boats_not_sunk(@boat_list) == 1 
+    if BoatTracker.count_boats_not_sunk(@boat_list) == 1 
       @output.print " 1 boat."
     else
-      @output.print " #{Boat.count_boats_not_sunk(@boat_list)} boats."
+      @output.print " #{BoatTracker.count_boats_not_sunk(@boat_list)} boats."
     end
+    sleep(1)
   end
 
   def take_user_input
     @output.puts "\nPlease pick the coordinates you wish to attack."
     @selected_box_coordinates = @input.gets.chomp.to_s
+    system "clear"
   end
 
-  def mark_as_hit_or_miss
-    if hit?
-      @game_grid.grid[convert_coordinates[0]][convert_coordinates[1]] = "║  ⚓  ║"
-    else
-      @game_grid.grid[convert_coordinates[0]][convert_coordinates[1]] = "║  ☠  ║"
-    end
-  end
-
-  def hit?
-    Boat.boat_coords_hit?(@boat_list, convert_coordinates)
-  end
-
-  def convert_coordinates
-    coordinates_array = @selected_box_coordinates.chars
+  def convert_coordinates(input)
+    coordinates_array = input.chars
     if coordinates_array[2] == "0"
       coordinates_array.pop
       coordinates_array[1] = "10"
     end
     column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
     row = coordinates_array[1].to_i
-    [row, column]
+    @converted_coordinates = [row, column]
   end
 
-  def state_if_hit_or_miss
-    if hit?
-    @output.puts "You got one!"
-    else
-      @output.puts "Ah... Looks like you missed."
+  def run_hit_mechanics
+    hit_message
+    @game_grid.record_hit(@converted_coordinates)
+    boat_hit = BoatTracker.which_boat_hit?(@boat_list, @converted_coordinates)
+    boat_hit.record_hit(@converted_coordinates)
+    if boat_hit.sunk?
+      boat_sunk_message
     end
   end
 
-  def state_if_any_boat_sunk
-    if Boat.any_boat_sunk?(@boat_list)
-      boat_sunk_message 
-    end
+  def hit_message
+    @output.puts "You hit one! You don't lose a guess."
   end
 
   def boat_sunk_message
     @output.puts "Yay! You sank a boat!"
   end
 
-  def decrease_guesses_left_if_not_hit
-    if !hit?
-      @guesses_left -= 1
-    end
+  def run_miss_mechanics
+    miss_message
+    @game_grid.record_miss(@converted_coordinates)
+    @guesses_left -= 1
+  end
+
+  def miss_message
+    @output.puts "Ah... Looks like you missed. You lose a guess."
   end
 
   def win_message
