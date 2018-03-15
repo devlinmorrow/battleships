@@ -7,7 +7,7 @@ require_relative 'boat_tracker.rb'
 class Battleships
 
   attr_accessor :guesses_left
-  attr_reader :selected_box_coordinates, :converted_coordinates, :boat_list
+  attr_reader :user_input, :converted_coordinates, :boat_list
 
   LETTERCOLLECTION = ("A".."Z").to_a
 
@@ -55,7 +55,7 @@ class Battleships
       sleep(1)
       guesses_and_boats_left_message
       take_user_input
-      convert_coordinates(@selected_box_coordinates)
+      convert_coordinates(@user_input)
       if BoatTracker.any_boat_hit?(@boat_list, @converted_coordinates)
         run_hit_mechanics
       else
@@ -86,7 +86,7 @@ class Battleships
 
   def take_user_input
     @output.puts "\nPlease pick the coordinates you wish to attack."
-    @selected_box_coordinates = @input.gets.chomp.to_s
+    @user_input = @input.gets.chomp.to_s
     system "clear"
   end
 

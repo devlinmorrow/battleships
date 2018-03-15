@@ -55,7 +55,7 @@ describe BoatTracker do
       it "returns true" do
         example_boat = Boat.new([[9,1]])
 
-        example_boat.coords_hash[[9,1]] = true
+        example_boat.set_of_coordinates[[9,1]] = true
 
         expect(BoatTracker.all_boats_sunk?([example_boat])).to eql(true)
       end

@@ -39,7 +39,7 @@ describe Battleships do
 
       example_game.take_user_input
 
-      expect(example_game.selected_box_coordinates).to eql("A1")
+      expect(example_game.user_input).to eql("A1")
     end
   end
 

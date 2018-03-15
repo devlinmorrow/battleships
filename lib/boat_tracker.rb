@@ -1,27 +1,23 @@
 class BoatTracker
 
-  def self.any_boat_hit?(boat_list, target_coords)
+  def self.any_boat_hit?(boat_list, targeted_coordinates)
     hit = false
     boat_list.each do |boat|
-      boat.coords_hash.each_key do |boat_coords|
-        if boat_coords == target_coords
-          hit = true
-        end
+      if boat.any_coordinates_hit?(targeted_coordinates)
+        hit = true
       end
     end
     hit
   end
 
-  def self.which_boat_hit?(boat_list, target_coords)
-    attacked_boat = nil
+  def self.which_boat_hit?(boat_list, targeted_coordinates)
+    hit_boat = nil
     boat_list.each do |boat|
-      boat.coords_hash.each_key do |coords_key|
-        if coords_key == target_coords
-          attacked_boat = boat
-        end
+      if boat.any_coordinates_hit?(targeted_coordinates)
+        hit_boat = boat
       end
     end
-    attacked_boat
+    hit_boat
   end
 
   def self.count_boats_not_sunk(boat_list)

@@ -1,20 +1,29 @@
 class Boat
 
-  attr_reader :coords_hash
+  attr_reader :set_of_coordinates
 
-  def initialize(coords_array)
-    @coords_hash = Hash.new
-    coords_array.each do |coords|
-      @coords_hash[coords] = false
+  def initialize(coordinates_data)
+    @set_of_coordinates = Hash.new
+    coordinates_data.each do |each_coordinates_target|
+      @set_of_coordinates[each_coordinates_target] = false
     end
-    #Add code to throw an error if the boat_coords parameter given is not an array of arrays?
   end
 
-  def record_hit(target_coords)
-    @coords_hash[target_coords] = true
+  def any_coordinates_hit?(targeted_coordinates)
+    hit = false
+    @set_of_coordinates.each_key do |each_set_of_coords_of_boat|
+      if each_set_of_coords_of_boat == targeted_coordinates
+        hit = true
+      end
+    end
+    hit
+  end
+
+  def record_hit(targeted_coordinates)
+    @set_of_coordinates[targeted_coordinates] = true
   end
 
   def sunk?
-    @coords_hash.values.all?
+    @set_of_coordinates.values.all?
   end
 end
