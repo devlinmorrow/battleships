@@ -57,4 +57,8 @@ def prepend_numbers
     @output.print @grid.join
   end
 
+  def record_hit(coordinates)
+      grid[coordinates[0]][coordinates[1]] = "║  ⚓  ║"
+  end
+
 end

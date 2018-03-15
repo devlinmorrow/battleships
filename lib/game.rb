@@ -78,29 +78,37 @@ class Battleships
   end
 
   def take_user_input
-    @output.puts "\nPlease pick the coordinates you wish to attack."
+    @output.puts "\nPlease pick the coordinates you wish to attack (in the format: letter-number)."
+    input_validation
+  end
+
+  def input_validation
     @selected_box_coordinates = @input.gets.chomp.to_s
+    if !is_input_in_correct_format?(@selected_box_coordinates)
+      @output.puts "\nOops, looks like you entered something silly!"
+      take_user_input
+    elsif has_input_previously_been_entered?(convert_coordinates)
+      @output.puts "\nOops, looks like you've already tried that one!"
+      take_user_input
+    end
   end
 
-  def check_if_input_correct_format(data)
+  def is_input_in_correct_format?(input)
+    input = input.chars
+    if !LETTERCOLLECTION[0..9].include?(input[0].upcase)
+      return false
+    elsif input[3]
+      return false
+    elsif input.length == 3 
+      return false unless input[1].to_i == "1" && input[2] == "2"
+    elsif !("1".."9").to_a.include?(input[1])
+      return false
+    end
     true
   end
 
-  def hello
-    data = data.chars
-    unless lettercollection[0..9] === data[0].upcase
-      return false
-    end
-    if data[3]
-      return false
-    elsif data[1].to_i < 1
-      return false
-elsif data[1].to_i > 9 
-      return false
-    elsif data[2]
-      return false unless data[1].to_i == 1 && data[2].to_i == 0
-    end
-    true
+  def has_input_previously_been_entered?(input)
+    @game_grid.grid[input[0]][input[1]] != "║  ☺  ║"
   end
 
   def convert_coordinates
