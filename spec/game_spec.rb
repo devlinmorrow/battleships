@@ -24,17 +24,6 @@ describe Battleships do
     end
   end
 
-  describe "#take_user_input" do
-    it "stores user input" do
-      input = StringIO.new("A1")
-      example_game = Battleships.new(input)
-
-      example_game.take_user_input
-
-      expect(example_game.user_input).to eql("A1")
-    end
-  end
-
   describe "#is_input_in_correct_format?" do
     context "when input is in correct format" do
       it "returns true" do
@@ -99,7 +88,7 @@ describe Battleships do
       it "returns false" do
         example_game = Battleships.new
 
-        expect(example_game.has_input_previously_been_entered?([1,1])).to eql(false)
+        expect(example_game.has_input_previously_been_entered?("A1")).to eql(false)
       end
     end
 
@@ -109,26 +98,22 @@ describe Battleships do
 
         example_game.game_grid.record_hit([1,1])
 
-        expect(example_game.has_input_previously_been_entered?([1,1])).to eql(true)
+        expect(example_game.has_input_previously_been_entered?("A1")).to eql(true)
       end
     end
   end
 
-  describe "#convert_coordinates" do
+  describe "#convert_input_to_coordinates" do
     it "converts and stores the user input as an array of grid coordinates" do
       example_game = Battleships.new
 
-      example_game.convert_coordinates("A1")
-
-      expect(example_game.converted_coordinates).to eql([1,1])
+      expect(example_game.convert_input_to_coordinates("A1")).to eql([1,1])
     end
 
     it "handles the case where the row selected is '10'" do
       example_game = Battleships.new
 
-      example_game.convert_coordinates("A10")
-
-      expect(example_game.converted_coordinates).to eql([10,1])
+      expect(example_game.convert_input_to_coordinates("A10")).to eql([10,1])
     end
   end
 end

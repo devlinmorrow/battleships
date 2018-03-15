@@ -7,7 +7,7 @@ require_relative 'boat_list.rb'
 class Battleships
 
   attr_accessor :guesses_left
-  attr_reader :user_input, :converted_coordinates 
+  attr_reader :game_grid, :targeted_grid_coordinates 
 
   LETTERCOLLECTION = ("A".."Z").to_a
 
@@ -21,14 +21,14 @@ class Battleships
 
   def create_boat_list
     [@boat_1 = Boat.new([[9,1]]),
-    @boat_2 = Boat.new([[8,3]]),
-    @boat_3 = Boat.new([[7,1]]),
-    @boat_4 = Boat.new([[2,7]]),
-    @boat_5 = Boat.new([[6,5],[6,6]]),
-    @boat_6 = Boat.new([[6,2],[6,3]]),
-    @boat_7 = Boat.new([[3,1],[4,1],[5,1]]),
-    @boat_8 = Boat.new([[2,9],[3,9],[4,9]]),
-    @boat_9 = Boat.new([[9,2],[9,3],[9,4],[9,5]])]
+     @boat_2 = Boat.new([[8,3]]),
+     @boat_3 = Boat.new([[7,1]]),
+     @boat_4 = Boat.new([[2,7]]),
+     @boat_5 = Boat.new([[6,5],[6,6]]),
+     @boat_6 = Boat.new([[6,2],[6,3]]),
+     @boat_7 = Boat.new([[3,1],[4,1],[5,1]]),
+     @boat_8 = Boat.new([[2,9],[3,9],[4,9]]),
+     @boat_9 = Boat.new([[9,2],[9,3],[9,4],[9,5]])]
   end
 
   def play_game
@@ -53,9 +53,8 @@ class Battleships
       @game_grid.display_board
       sleep(1)
       guesses_and_boats_left_message
-      take_user_input
-      convert_coordinates(@user_input)
-      if @game_boat_list.any_boat_hit?(@converted_coordinates)
+      take_and_convert_user_input
+      if @game_boat_list.any_boat_hit?(@targeted_grid_coordinates)
         run_hit_mechanics
       else
         run_miss_mechanics
@@ -83,21 +82,27 @@ class Battleships
     sleep(1)
   end
 
-  def take_user_input
-    @output.puts "\nplease pick the coordinates you wish to attack (in the format: letter-number)."
-    input_validation
+  def take_and_convert_user_input
+    input = take_user_input
+    @targeted_grid_coordinates = convert_input_to_coordinates(input)
     system "clear"
   end
 
+  def take_user_input
+    @output.puts "\nplease pick the coordinates you wish to attack (in the format: letter-number)."
+    input_validation
+  end
+
   def input_validation
-    @selected_box_coordinates = @input.gets.chomp.to_s
-    if !is_input_in_correct_format?(@selected_box_coordinates)
+    user_input = @input.gets.chomp.to_s
+    if !is_input_in_correct_format?(user_input)
       @output.puts "\nOops, looks like you entered something silly!"
       take_user_input
-    elsif has_input_previously_been_entered?(convert_coordinates)
+    elsif has_input_previously_been_entered?(user_input)
       @output.puts "\nOops, looks like you've already tried that one!"
       take_user_input
     end
+    user_input
   end
 
   def is_input_in_correct_format?(input)
@@ -115,26 +120,26 @@ class Battleships
   end
 
   def has_input_previously_been_entered?(input)
-    @game_grid.grid[input[0]][input[1]] != "║  ☺  ║"
+    grid_coords = convert_input_to_coordinates(input)
+    @game_grid.grid[grid_coords[0]][grid_coords[1]] != "║  ☺  ║"
   end
 
-  def convert_coordinates
-    #add input parameter to this instead of reading the instance variable selected box coords wherever it is.
-    coordinates_array = @selected_box_coordinates.chars
-    if coordinates_array[2] == "0"
-      coordinates_array.pop
-      coordinates_array[1] = "10"
+  def convert_input_to_coordinates(input)
+    input = input.chars
+    if input[2] == "0"
+      input.pop
+      input[1] = "10"
     end
-    column = LETTERCOLLECTION.index(coordinates_array[0].upcase) + 1 
-    row = coordinates_array[1].to_i
-    @converted_coordinates = [row, column]
+    column = LETTERCOLLECTION.index(input[0].upcase) + 1 
+    row = input[1].to_i
+    [row, column]
   end
 
   def run_hit_mechanics
     hit_message
-    @game_grid.record_hit(@converted_coordinates)
-    boat_hit = @game_boat_list.which_boat_hit?(@converted_coordinates)
-    boat_hit.record_hit(@converted_coordinates)
+    @game_grid.record_hit(@targeted_grid_coordinates)
+    boat_hit = @game_boat_list.which_boat_hit?(@targeted_grid_coordinates)
+    boat_hit.record_hit(@targeted_grid_coordinates)
     if boat_hit.sunk?
       boat_sunk_message
     end
@@ -150,7 +155,7 @@ class Battleships
 
   def run_miss_mechanics
     miss_message
-    @game_grid.record_miss(@converted_coordinates)
+    @game_grid.record_miss(@targeted_grid_coordinates)
     @guesses_left -= 1
   end
 
