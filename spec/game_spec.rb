@@ -1,14 +1,6 @@
 require 'game'
 
 describe Battleships do
-  describe "#create_boat_list" do
-    it "returns array of boats" do
-      example_game = Battleships.new
-
-      expect(example_game.boat_list).not_to be_nil
-    end
-  end
-
   describe "#guesses_and_boats_left_message" do
     it "outputs how many guesses are left" do
       input = StringIO.new
