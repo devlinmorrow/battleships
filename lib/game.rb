@@ -7,7 +7,7 @@ require_relative 'boat_list.rb'
 class Battleships
 
   attr_accessor :guesses_left
-  attr_reader :game_grid, :targeted_grid_coordinates 
+  attr_reader :game_grid, :target_grid_point 
 
   LETTERCOLLECTION = ("A".."Z").to_a
 
@@ -32,7 +32,6 @@ class Battleships
   end
 
   def play_game
-    system "clear"
     initial_message
     make_guesses
     if game_is_won
@@ -43,6 +42,7 @@ class Battleships
   end
 
   def initial_message
+    system "clear"
     @output.puts "Welcome to Battleships! You have #{@guesses_left} guesses to sink #{@game_boat_list.count_boats_not_sunk} boats.\nI will tell you when you have sunk a boat and you won't lose a guess if you hit a boat. Good luck!"
     sleep(5)
     system "clear"
@@ -54,7 +54,7 @@ class Battleships
       sleep(1)
       guesses_and_boats_left_message
       take_and_convert_user_input
-      if @game_boat_list.any_boat_hit?(@targeted_grid_coordinates)
+      if @game_boat_list.any_boat_hit?(@target_grid_point)
         run_hit_mechanics
       else
         run_miss_mechanics
@@ -84,62 +84,60 @@ class Battleships
 
   def take_and_convert_user_input
     input = take_user_input
-    @targeted_grid_coordinates = convert_input_to_coordinates(input)
+    @target_grid_point = convert_input_to_coordinates(input)
     system "clear"
   end
 
   def take_user_input
-    @output.puts "\nplease pick the coordinates you wish to attack (in the format: letter-number)."
+    @output.puts "\nPlease pick the coordinates you wish to attack (in the format: letter-number)."
     input_validation
   end
 
   def input_validation
     user_input = @input.gets.chomp.to_s
-    if !is_input_in_correct_format?(user_input)
+    if input_is_not_in_correct_format?(user_input)
       @output.puts "\nOops, looks like you entered something silly!"
       take_user_input
-    elsif has_input_previously_been_entered?(user_input)
+    elsif input_has_previously_been_entered?(user_input)
       @output.puts "\nOops, looks like you've already tried that one!"
       take_user_input
     end
     user_input
   end
 
-  def is_input_in_correct_format?(input)
-    input = input.chars
-    if !LETTERCOLLECTION[0..9].include?(input[0].upcase)
-      return false
-    elsif input[3]
-      return false
-    elsif input.length == 3 
-      return false unless input[1].to_i == "1" && input[2] == "2"
-    elsif !("1".."9").to_a.include?(input[1])
-      return false
+  def input_is_in_correct_format?(user_input)
+    user_input = user_input.chars
+    return false unless user_input[0] =~ /[a-j]/i
+    return false unless user_input[1] =~ /[1-9]/
+    if user_input[2]
+      return false unless user_input[1] =~ /1/
+      return false unless user_input[2] =~ /0/
     end
+    return false if user_input[3]
     true
   end
 
-  def has_input_previously_been_entered?(input)
-    grid_coords = convert_input_to_coordinates(input)
-    @game_grid.grid[grid_coords[0]][grid_coords[1]] != "║  ☺  ║"
+  def input_has_previously_been_entered?(user_input)
+    grid_point = convert_input_to_grid_point(user_input)
+    @game_grid.grid[grid_point[0]][grid_point[1]] != "║  ☺  ║"
   end
 
-  def convert_input_to_coordinates(input)
-    input = input.chars
-    if input[2] == "0"
-      input.pop
-      input[1] = "10"
+  def convert_input_to_grid_point(user_input)
+    user_input = user_input.chars
+    if user_input[2] == "0"
+      user_input.pop
+      user_input[1] = "10"
     end
-    column = LETTERCOLLECTION.index(input[0].upcase) + 1 
-    row = input[1].to_i
+    column = LETTERCOLLECTION.index(user_input[0].upcase) + 1 
+    row = user_input[1].to_i
     [row, column]
   end
 
   def run_hit_mechanics
     hit_message
-    @game_grid.record_hit(@targeted_grid_coordinates)
-    boat_hit = @game_boat_list.which_boat_hit?(@targeted_grid_coordinates)
-    boat_hit.record_hit(@targeted_grid_coordinates)
+    @game_grid.record_hit(@target_grid_point)
+    boat_hit = @game_boat_list.which_boat_hit?(@target_grid_point)
+    boat_hit.record_hit(@target_grid_point)
     if boat_hit.sunk?
       boat_sunk_message
     end
@@ -155,7 +153,7 @@ class Battleships
 
   def run_miss_mechanics
     miss_message
-    @game_grid.record_miss(@targeted_grid_coordinates)
+    @game_grid.record_miss(@target_grid_point)
     @guesses_left -= 1
   end
 

@@ -4,24 +4,17 @@ class BoatList
     @boat_list = boat_list
   end
 
-  def any_boat_hit?(targeted_coordinates)
-    hit = false
+  def any_boat_hit?(target_grid_point)
     @boat_list.each do |boat|
-      if boat.any_coordinates_hit?(targeted_coordinates)
-        hit = true
-      end
+    return true if boat.any_point_matched?(target_grid_point)
     end
-    hit
+    false
   end
 
-  def which_boat_hit?(targeted_coordinates)
-    hit_boat = nil
+  def which_boat_hit?(target_grid_point)
     @boat_list.each do |boat|
-      if boat.any_coordinates_hit?(targeted_coordinates)
-        hit_boat = boat
+      return boat if boat.any_point_matched?(target_grid_point)
       end
-    end
-    hit_boat
   end
 
   def count_boats_not_sunk

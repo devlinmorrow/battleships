@@ -57,11 +57,11 @@ def prepend_numbers
     @output.print @grid.join
   end
 
-  def record_hit(coordinates)
-    @grid[coordinates[0]][coordinates[1]] = "║  ⚓  ║"
+  def record_hit(grid_point)
+    @grid[grid_point[0]][grid_point[1]] = "║  ⚓  ║"
   end
 
-  def record_miss(coordinates)
-    @grid[coordinates[0]][coordinates[1]] = "║  ☠  ║"
+  def record_miss(grid_point)
+    @grid[grid_point[0]][grid_point[1]] = "║  ☠  ║"
   end
 end

@@ -1,59 +1,49 @@
 require 'boat'
 
 describe Boat do
-  describe "#initialize" do
-    it "initialises boat objects with false values to represent 'not yet hit'" do
-      example_boat = Boat.new([[9,1]])
-
-      expect(example_boat.set_of_coordinates.values).to eql([false])
-    end
-  end
-
-  describe "#check_if_hit" do
-    context "when the input hits one of the boat's coordinates" do
+  describe "#any_point_matched?" do
+    context "when the target grid point matches one of the boat's grid points" do
       it "returns true" do
         example_boat = Boat.new([[9,1]])
 
-        expect(example_boat.any_coordinates_hit?([9,1])).to eql(true)
+        expect(example_boat.any_point_matched?([9,1])).to eql(true)
       end
     end
 
-    context "when the input does not match any of the boat's coordinates" do
+    context "when the target grid point does not match any of the boat's grid points" do
       it "returns false" do
         example_boat = Boat.new([[9,1]])
 
-        expect(example_boat.any_coordinates_hit?([1,1])).to eql(false)
+        expect(example_boat.any_point_matched?([1,1])).to eql(false)
       end
     end
   end
 
   describe "#record_hit" do
-    it "sets value of that boat's corresponding coordinates to true" do
+    it "records a 'hit' on the corresponding grid point of the boat by setting its value to 'true'" do
       example_boat = Boat.new([[9,1]])
 
-      example_boat.record_hit([9,1])
-
-      expect(example_boat.set_of_coordinates[[9,1]]).to eql(true)
+      expect(example_boat.record_hit([9,1])).to eql(true)
     end
   end
 
   describe "#sunk?" do
-    context "when all of a boat's coordinates have been hit" do
+    context "when all of a boat's grid points have been hit" do
       it "returns true" do
         example_boat = Boat.new([[6,5],[6,6]])
 
-        example_boat.set_of_coordinates[[6,5]] = true
-        example_boat.set_of_coordinates[[6,6]] = true
+        example_boat.record_hit([6,5])
+        example_boat.record_hit([6,6])
 
         expect(example_boat.sunk?).to eql(true)
       end
     end
 
-    context "not all boat coords hit" do
+    context "when not all of a boat's grid points have been hit" do
       it "returns false" do
         example_boat = Boat.new([[6,5],[6,6]])
 
-        example_boat.set_of_coordinates[[6,6]] = true
+        example_boat.record_hit([6,6])
 
         expect(example_boat.sunk?).to eql(false)
       end

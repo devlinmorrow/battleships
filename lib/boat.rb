@@ -1,29 +1,24 @@
 class Boat
 
-  attr_reader :set_of_coordinates
-
-  def initialize(coordinates_data)
-    @set_of_coordinates = Hash.new
-    coordinates_data.each do |each_coordinates_target|
-      @set_of_coordinates[each_coordinates_target] = false
+  def initialize(set_of_grid_points)
+    @set_of_grid_points = Hash.new
+    set_of_grid_points.each do |grid_point|
+      @set_of_grid_points[grid_point] = false
     end
   end
 
-  def any_coordinates_hit?(targeted_coordinates)
-    hit = false
-    @set_of_coordinates.each_key do |each_set_of_coords_of_boat|
-      if each_set_of_coords_of_boat == targeted_coordinates
-        hit = true
+  def any_point_matched?(target_grid_point)
+    @set_of_grid_points.each_key do |grid_point|
+      return true if grid_point == target_grid_point
       end
-    end
-    hit
+    false
   end
 
-  def record_hit(targeted_coordinates)
-    @set_of_coordinates[targeted_coordinates] = true
+  def record_hit(target_grid_point)
+    @set_of_grid_points[target_grid_point] = true
   end
 
   def sunk?
-    @set_of_coordinates.values.all?
+    @set_of_grid_points.values.all?
   end
 end

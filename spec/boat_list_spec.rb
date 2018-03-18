@@ -3,7 +3,7 @@ require 'boat'
 
 describe BoatList do
   describe "#any_boat_hit?" do
-    context "when the user input hits the coordinates of a boat" do
+    context "when the target grid point hits the grid point of a boat" do
       it "returns true" do
         example_boat = Boat.new([[1,1]])
         example_boat_list = BoatList.new([example_boat])
@@ -12,7 +12,7 @@ describe BoatList do
       end
     end
 
-    context "when the user input does not hit any boat's coordinates" do
+    context "when the target grid point does not hit any boat's grid points" do
       it "returns false" do
         example_boat = Boat.new([[1,1]])
         example_boat_list = BoatList.new([example_boat])
@@ -23,7 +23,7 @@ describe BoatList do
   end
 
   describe "#which_boat_hit?" do
-    context "when the user input hits the coordinates of a boat" do
+    context "when the target grid point hits the grid point of a boat" do
       it "returns the boat object" do
         example_boat = Boat.new([[1,1]])
         example_boat_2 = Boat.new([[1,2]])
@@ -61,13 +61,13 @@ describe BoatList do
         example_boat = Boat.new([[9,1]])
         example_boat_list = BoatList.new([example_boat])
 
-        example_boat.set_of_coordinates[[9,1]] = true
+        example_boat.record_hit([9,1])
 
         expect(example_boat_list.all_boats_sunk?).to eql(true)
       end
     end
 
-    context "not all boats sunk" do
+    context "not all boats have been sunk" do
       it "returns false" do
         example_boat = Boat.new([[9,1]])
         example_boat_list = BoatList.new([example_boat])
