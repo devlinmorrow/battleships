@@ -11,7 +11,7 @@ class Boat
     @set_of_grid_points.each_key do |grid_point|
       return true if grid_point == target_grid_point
       end
-    false
+   false
   end
 
   def record_hit(target_grid_point)

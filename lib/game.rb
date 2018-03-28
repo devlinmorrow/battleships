@@ -84,7 +84,7 @@ class Battleships
 
   def take_and_convert_user_input
     input = take_user_input
-    @target_grid_point = convert_input_to_coordinates(input)
+    @target_grid_point = convert_input_to_grid_point(input)
     system "clear"
   end
 
@@ -95,7 +95,7 @@ class Battleships
 
   def input_validation
     user_input = @input.gets.chomp.to_s
-    if input_is_not_in_correct_format?(user_input)
+    if !input_is_in_correct_format?(user_input)
       @output.puts "\nOops, looks like you entered something silly!"
       take_user_input
     elsif input_has_previously_been_entered?(user_input)
