@@ -1,12 +1,14 @@
 #!/usr/bin/env ruby
 
+require 'pry'
+
 require_relative 'grid.rb'
 require_relative 'boat.rb'
 require_relative 'boat_list.rb'
 
-class Battleships
+class BattleshipsGame
 
-  attr_accessor :guesses_left
+  attr_accessor :guesses_left, :game_boat_list
   attr_reader :game_grid, :target_grid_point 
 
   LETTERCOLLECTION = ("A".."Z").to_a
@@ -42,16 +44,12 @@ class Battleships
   end
 
   def initial_message
-    system "clear"
     @output.puts "Welcome to Battleships! You have #{@guesses_left} guesses to sink #{@game_boat_list.count_boats_not_sunk} boats.\nI will tell you when you have sunk a boat and you won't lose a guess if you hit a boat. Good luck!"
-    sleep(5)
-    system "clear"
   end
 
   def make_guesses
     while @guesses_left > 0 && !game_is_won
       @game_grid.display_board
-      sleep(1)
       guesses_and_boats_left_message
       take_and_convert_user_input
       if @game_boat_list.any_boat_hit?(@target_grid_point)
@@ -79,42 +77,45 @@ class Battleships
     else
       @output.print " #{@game_boat_list.count_boats_not_sunk} boats."
     end
-    sleep(1)
   end
 
   def take_and_convert_user_input
-    input = take_user_input
+    input = take_input_until_correct
     @target_grid_point = convert_input_to_grid_point(input)
-    system "clear"
+  end
+
+  def take_input_until_correct
+    input = take_user_input
+    until input_is_valid?(input)
+      input = take_user_input
+    end
+    input
   end
 
   def take_user_input
     @output.puts "\nPlease pick the coordinates you wish to attack (in the format: letter-number)."
-    input_validation
+    @input.gets.chomp.to_s
   end
 
-  def input_validation
-    user_input = @input.gets.chomp.to_s
-    if !input_is_in_correct_format?(user_input)
+  def input_is_valid?(user_input)
+    if input_is_not_in_correct_format?(user_input)
       @output.puts "\nOops, looks like you entered something silly!"
-      take_user_input
     elsif input_has_previously_been_entered?(user_input)
       @output.puts "\nOops, looks like you've already tried that one!"
-      take_user_input
+    else true
     end
-    user_input
   end
 
-  def input_is_in_correct_format?(user_input)
+  def input_is_not_in_correct_format?(user_input)
     user_input = user_input.chars
-    return false unless user_input[0] =~ /[a-j]/i
-    return false unless user_input[1] =~ /[1-9]/
+    return true unless user_input[0] =~ /[a-j]/i
+    return true unless user_input[1] =~ /[1-9]/
     if user_input[2]
-      return false unless user_input[1] =~ /1/
-      return false unless user_input[2] =~ /0/
+      return true unless user_input[1] =~ /1/
+      return true unless user_input[2] =~ /0/
     end
-    return false if user_input[3]
-    true
+    return true if user_input[3]
+    false
   end
 
   def input_has_previously_been_entered?(user_input)
@@ -170,4 +171,4 @@ class Battleships
   end
 end
 
-@b = Battleships.new
+@dev_game = BattleshipsGame.new
