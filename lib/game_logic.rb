@@ -1,21 +1,15 @@
-#!/usr/bin/env ruby
-
-require 'pry'
-
 require_relative 'grid.rb'
 require_relative 'boat.rb'
 require_relative 'boat_list.rb'
 
-class BattleshipsGame
+class GameLogic
 
   attr_accessor :guesses_left, :game_boat_list
   attr_reader :game_grid, :target_grid_point 
 
   LETTERCOLLECTION = ("A".."Z").to_a
 
-  def initialize(input = $stdin, output = $stdout)
-    @input = input
-    @output = output
+  def initialize
     @guesses_left = 20
     @game_grid = Grid.new
     @game_boat_list = BoatList.new(create_boat_list)
